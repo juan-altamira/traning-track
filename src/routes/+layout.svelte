@@ -8,7 +8,9 @@
 	let session = (data?.session ?? null) as Session | null;
 
 	const hideAuthActions = $derived(
-		['/r/', '/login', '/registro', '/reset'].some((p) => $page.url.pathname.startsWith(p))
+		['/r/', '/login', '/registro', '/reset', '/clientes'].some((p) =>
+			$page.url.pathname.startsWith(p)
+		)
 	);
 </script>
 

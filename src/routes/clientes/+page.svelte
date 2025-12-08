@@ -43,8 +43,7 @@
 <section class="flex flex-col gap-8 text-slate-100">
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div>
-			<p class="text-base font-semibold uppercase tracking-wide text-slate-400">Clientes</p>
-			<h1 class="text-3xl font-semibold text-slate-50">Panel del entrenador</h1>
+			<p class="text-2xl font-semibold uppercase tracking-wide text-slate-100">EN ESTE PANEL VERAS A TUS CLIENTES</p>
 		</div>
 		<form method="POST" action="/logout">
 			<button
@@ -126,9 +125,7 @@
 			class="space-y-5 rounded-xl border border-slate-800 bg-[#0f111b] p-7 shadow-lg shadow-black/30"
 		>
 			<div class="space-y-2">
-				<p class="text-base font-semibold uppercase tracking-wide text-slate-400">Nuevo cliente</p>
-				<h2 class="text-2xl font-semibold text-slate-50">Crear cliente</h2>
-				<p class="text-base text-slate-400">Genera el link y la rutina inicial vacía.</p>
+				<h2 class="text-2xl font-semibold text-slate-50 uppercase">Crear cliente</h2>
 			</div>
 
 			<label class="block text-base font-medium text-slate-200">
@@ -152,10 +149,14 @@
 
 			<button
 				type="submit"
-				class="w-full rounded-lg bg-emerald-600 px-5 py-3 text-lg text-white transition hover:bg-emerald-500"
+				class="relative w-full overflow-hidden rounded-lg bg-emerald-600 px-5 py-3 text-lg text-white transition hover:bg-emerald-500"
 			>
-				Crear y generar link
+				<span class="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-0 animate-pulse blur-sm"></span>
+				<span class="relative">Crear y generar link</span>
 			</button>
+			<p class="text-sm text-slate-400">
+				Al hacer click crearás un cliente y un link para que él pueda acceder a su rutina.
+			</p>
 
 			{#if form?.message}
 				<p class="rounded-lg bg-red-900/40 px-3 py-2 text-sm text-red-200">
