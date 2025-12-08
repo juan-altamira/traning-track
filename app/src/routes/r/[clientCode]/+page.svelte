@@ -79,59 +79,67 @@
 		</p>
 	</section>
 {:else}
-	<section class="legacy-shell">
-		<header class="legacy-header">
-			<div>
-				<p class="eyebrow">Rutina de</p>
-				<h1>{data.clientName}</h1>
-				<p class="sub">{data.objective ?? 'Entrenamiento semanal'}</p>
-				{#if data.last_completed_at}
-					<p class="sub small">Última actualización: {new Date(data.last_completed_at).toLocaleString()}</p>
-				{/if}
-			</div>
+	<section class="client-shell">
+		<header class="hero">
+			<h1>Rutina de Entrenamiento</h1>
+			<p>{data.clientName}</p>
+			{#if data.objective}
+				<p class="objective">{data.objective}</p>
+			{/if}
 		</header>
 
-		<div class="day-grid">
+		<div class="days">
 			{#each WEEK_DAYS as day}
 				{#if plan[day.key]}
-					<article class="day-card {expanded[day.key] ? 'expanded' : ''}">
-						<div class="day-header" onclick={() => toggleExpanded(day.key)}>
-							<span class="day-title">{day.label}</span>
-							{#if progress[day.key]?.completed}
-								<span class="day-complete-badge">Día completado</span>
-							{/if}
-							<span class="arrow">{expanded[day.key] ? '▾' : '▸'}</span>
-						</div>
-						<div class="day-content">
-							{#if plan[day.key].exercises.length === 0}
-								<div class="exercise-card">No hay ejercicios configurados para este día.</div>
-							{:else}
-								{#each plan[day.key].exercises as exercise (exercise.id)}
-									<div class="exercise-card">
-										<div class="exercise-title">{exercise.name}</div>
-										<div class="exercise-desc">{exercise.scheme}</div>
-										{#if exercise.note}
-											<div class="exercise-note">{exercise.note}</div>
-										{/if}
-										<div class="exercise-controls">
-											<button class="circle-btn" type="button" onclick={() => adjustSets(day.key, exercise.id, -1)}>−</button>
-											<div class="exercise-count">
-												<div class="count">
-													{progress[day.key]?.exercises?.[exercise.id] ?? 0} / {Math.max(1, getTargetSets(exercise) || 0)}
-												</div>
-												<div class="label">series</div>
-											</div>
-											<button class="circle-btn" type="button" onclick={() => adjustSets(day.key, exercise.id, 1)}>+</button>
-										</div>
-									</div>
-								{/each}
-							{/if}
-							<div class="day-footer">
-								<button class="toggle-day" type="button" onclick={() => toggleDayComplete(day.key)}>
-									{progress[day.key]?.completed ? 'Marcar como pendiente' : 'Marcar día completo'}
-								</button>
+					<article class={`day-card ${expanded[day.key] ? 'is-open' : ''} ${progress[day.key]?.completed ? 'is-done' : ''}`}>
+						<button class="day-header" type="button" onclick={() => toggleExpanded(day.key)}>
+							<div class="day-left">
+								<span class="day-name">{day.label}</span>
+								{#if progress[day.key]?.completed}
+									<span class="badge success">Día completado</span>
+								{/if}
 							</div>
-						</div>
+							<span class="arrow">{expanded[day.key] ? '▾' : '▸'}</span>
+						</button>
+
+						{#if expanded[day.key]}
+							<div class="day-body">
+								{#if plan[day.key].exercises.length === 0}
+									<div class="exercise-card empty">No hay ejercicios configurados para este día.</div>
+								{:else}
+									{#each plan[day.key].exercises as exercise (exercise.id)}
+										<div class="exercise-card">
+											<div class="exercise-head">
+												<div>
+													<p class="exercise-name">{exercise.name}</p>
+													<p class="exercise-scheme">{exercise.scheme}</p>
+												</div>
+												{#if (progress[day.key]?.exercises?.[exercise.id] ?? 0) >= Math.max(1, getTargetSets(exercise) || 0)}
+													<span class="badge success">Completado</span>
+												{/if}
+											</div>
+											{#if exercise.note}
+												<p class="exercise-note">{exercise.note}</p>
+											{/if}
+											<div class="exercise-controls">
+												<button class="pill-btn" type="button" onclick={() => adjustSets(day.key, exercise.id, -1)}>−</button>
+												<div class="sets">
+													<span class="sets-done">{progress[day.key]?.exercises?.[exercise.id] ?? 0}</span>
+													<span class="sets-separator">/</span>
+													<span class="sets-total">{Math.max(1, getTargetSets(exercise) || 0)}</span>
+												</div>
+												<button class="pill-btn" type="button" onclick={() => adjustSets(day.key, exercise.id, 1)}>+</button>
+											</div>
+										</div>
+									{/each}
+								{/if}
+								<div class="day-footer">
+									<button class={`day-toggle ${progress[day.key]?.completed ? 'secondary' : ''}`} type="button" onclick={() => toggleDayComplete(day.key)}>
+										{progress[day.key]?.completed ? 'Marcar como pendiente' : 'Marcar día completo'}
+									</button>
+								</div>
+							</div>
+						{/if}
 					</article>
 				{/if}
 			{/each}
@@ -147,99 +155,126 @@
 
 <style>
 	:global(body) {
-		background: linear-gradient(135deg, #f3f7fb 0%, #eef1f7 100%);
+		background: #0d0f14;
+		color: #e4e7ec;
 	}
-	.legacy-shell {
-		max-width: 900px;
+	.client-shell {
+		max-width: 960px;
 		margin: 0 auto;
-		padding: 1.5rem;
+		padding: 1.5rem 1.25rem 2rem;
 	}
-	.legacy-header {
-		background: #0f172a;
-		color: #fff;
-		padding: 1.5rem;
+	.hero {
+		background: #121420;
+		border: 1px solid #1f2333;
 		border-radius: 16px;
-		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+		padding: 1.25rem;
+		box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+		text-align: center;
 		margin-bottom: 1rem;
 	}
-	.legacy-header h1 {
+	.hero h1 {
 		margin: 0;
-		font-size: 1.75rem;
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: #f7f8fb;
 	}
-	.eyebrow {
-		text-transform: uppercase;
-		font-size: 0.75rem;
-		letter-spacing: 0.08em;
-		margin: 0 0 0.25rem 0;
-	}
-	.sub {
+	.hero p {
 		margin: 0.15rem 0;
+		color: #c4c8d4;
+	}
+	.hero .objective {
 		font-size: 0.95rem;
-		opacity: 0.85;
+		color: #9aa0b6;
 	}
-	.sub.small {
-		font-size: 0.8rem;
-	}
-	.day-grid {
+	.days {
 		display: grid;
 		gap: 0.75rem;
 	}
 	.day-card {
-		background: #fff;
+		border: 1px solid #1f2333;
+		background: #0f111b;
 		border-radius: 14px;
-		border: 1px solid #e2e8f0;
-		box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 		overflow: hidden;
 	}
+	.day-card.is-done {
+		border-color: #1f3224;
+	}
 	.day-header {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: transparent;
+		color: #e4e7ec;
+		padding: 0.9rem 1rem;
+		border: none;
+		cursor: pointer;
+	}
+	.day-header:focus-visible {
+		outline: 2px solid #22c55e;
+	}
+	.day-left {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.9rem 1rem;
-		cursor: pointer;
-		background: #f8fafc;
 	}
-	.day-title {
+	.day-name {
 		font-weight: 700;
-		color: #0f172a;
-	}
-	.day-complete-badge {
-		background: #22c55e1a;
-		color: #15803d;
-		padding: 0.25rem 0.6rem;
-		border-radius: 999px;
-		font-size: 0.75rem;
-		font-weight: 600;
 	}
 	.arrow {
-		margin-left: auto;
-		color: #475569;
+		color: #7a8197;
+		font-size: 1.1rem;
 	}
-	.day-content {
+	.badge {
+		border-radius: 999px;
+		padding: 0.2rem 0.65rem;
+		font-size: 0.75rem;
+		font-weight: 700;
+	}
+	.badge.success {
+		background: #163820;
+		color: #3fdd77;
+		border: 1px solid #1f7c42;
+	}
+	.day-body {
 		padding: 0.75rem 1rem 1rem;
+		background: #0b0d14;
+		border-top: 1px solid #1f2333;
 		display: grid;
 		gap: 0.75rem;
 	}
 	.exercise-card {
-		border: 1px solid #e2e8f0;
+		background: #111423;
+		border: 1px solid #1f2333;
 		border-radius: 12px;
 		padding: 0.75rem;
-		background: #fff;
-		box-shadow: inset 0 0 0 1px #f8fafc;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.01);
 	}
-	.exercise-title {
+	.exercise-card.empty {
+		text-align: center;
+		color: #9aa0b6;
+	}
+	.exercise-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+	.exercise-name {
+		margin: 0;
 		font-weight: 700;
-		color: #0f172a;
+		color: #f7f8fb;
 	}
-	.exercise-desc {
-		font-size: 0.9rem;
-		color: #475569;
-		margin-top: 0.2rem;
+	.exercise-scheme {
+		margin: 0.1rem 0 0;
+		color: #c4c8d4;
+		font-size: 0.95rem;
 	}
 	.exercise-note {
+		margin: 0.35rem 0 0;
+		color: #9aa0b6;
 		font-size: 0.85rem;
-		color: #475569;
-		margin-top: 0.25rem;
 		font-style: italic;
 	}
 	.exercise-controls {
@@ -249,64 +284,77 @@
 		gap: 0.75rem;
 		margin-top: 0.65rem;
 	}
-	.circle-btn {
-		width: 42px;
-		height: 42px;
-		border-radius: 50%;
-		border: 1px solid #cbd5e1;
-		background: #fff;
-		font-size: 1.2rem;
-		font-weight: 700;
-		color: #0f172a;
+	.pill-btn {
+		width: 46px;
+		height: 46px;
+		border-radius: 12px;
+		border: 1px solid #27304a;
+		background: linear-gradient(180deg, #12172c 0%, #0f1425 100%);
+		color: #dce3ff;
+		font-size: 1.3rem;
+		font-weight: 800;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+		transition: transform 0.08s ease, box-shadow 0.1s ease;
 	}
-	.circle-btn:hover {
-		background: #f1f5f9;
+	.pill-btn:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 	}
-	.exercise-count {
-		text-align: center;
-		min-width: 110px;
+	.pill-btn:active {
+		transform: translateY(0);
 	}
-	.count {
-		font-weight: 700;
-		color: #0f172a;
+	.sets {
+		display: flex;
+		align-items: baseline;
+		gap: 0.3rem;
+		font-weight: 800;
+		color: #38e37c;
 	}
-	.label {
-		font-size: 0.8rem;
-		color: #475569;
+	.sets-total {
+		color: #c4c8d4;
+	}
+	.sets-separator {
+		color: #5b647a;
+		font-weight: 600;
 	}
 	.day-footer {
 		display: flex;
 		justify-content: flex-end;
 	}
-	.toggle-day {
-		background: #0f172a;
-		color: #fff;
+	.day-toggle {
 		border: none;
-		border-radius: 10px;
-		padding: 0.55rem 0.9rem;
+		border-radius: 12px;
+		padding: 0.65rem 1rem;
+		font-weight: 700;
+		background: #22c55e;
+		color: #0c141d;
 		cursor: pointer;
-		font-weight: 600;
+	}
+	.day-toggle.secondary {
+		background: #1e293b;
+		color: #dce3ff;
 	}
 	.feedback {
 		margin-top: 1rem;
 		padding: 0.75rem 1rem;
-		border-radius: 10px;
+		border-radius: 12px;
 		text-align: center;
 	}
 	.feedback.success {
-		background: #ecfdf3;
-		color: #15803d;
+		background: #163820;
+		color: #3fdd77;
+		border: 1px solid #1f7c42;
 	}
 	.feedback.muted {
-		background: #f8fafc;
-		color: #475569;
+		background: #0f111b;
+		color: #9aa0b6;
+		border: 1px solid #1f2333;
 	}
 
 	@media (min-width: 768px) {
-		.legacy-shell {
-			padding: 2rem;
+		.client-shell {
+			padding: 2rem 1.5rem 2.5rem;
 		}
 	}
 </style>
