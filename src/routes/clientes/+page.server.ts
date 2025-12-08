@@ -20,7 +20,7 @@ const ensureTrainerExists = async (supabase: App.Locals['supabase'], userId: str
 	}
 };
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.session) {
 		throw redirect(303, '/login');
 	}
@@ -89,8 +89,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			};
 		}) ?? [];
 
+	const siteUrl = process.env.PUBLIC_SITE_URL?.replace(/\/?$/, '') || url.origin;
+
 	return {
 		clients: list
+		siteUrl
 	};
 };
 

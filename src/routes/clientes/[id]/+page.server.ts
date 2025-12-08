@@ -4,7 +4,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { nowIsoUtc } from '$lib/time';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params, locals, url }) => {
 	if (!locals.session) {
 		throw redirect(303, '/login');
 	}
@@ -53,11 +53,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		await supabase.from('progress').insert({ client_id: clientId, progress });
 	}
 
+	const siteUrl = process.env.PUBLIC_SITE_URL?.replace(/\/?$/, '') || url.origin;
+
 	return {
 		client,
 		plan,
 		progress,
-		last_completed_at: progressRow?.last_completed_at ?? null
+		last_completed_at: progressRow?.last_completed_at ?? null,
+		siteUrl
 	};
 };
 
