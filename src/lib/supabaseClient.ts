@@ -1,4 +1,7 @@
 import { createBrowserClient } from '@supabase/auth-helpers-sveltekit';
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
-export const supabaseClient = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+const SUPABASE_URL = env.PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
+const SUPABASE_ANON_KEY = env.PUBLIC_SUPABASE_ANON_KEY ?? 'anon-placeholder';
+
+export const supabaseClient = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
