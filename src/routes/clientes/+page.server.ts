@@ -3,6 +3,7 @@ import type { ClientSummary } from '$lib/types';
 import { daysBetweenUtc, getCurrentWeekStartUtc, nowIsoUtc } from '$lib/time';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { env } from '$env/dynamic/public';
 
 const ensureTrainerExists = async (supabase: App.Locals['supabase'], userId: string, email: string) => {
 	const { data, error } = await supabase.from('trainers').select('id').eq('id', userId).maybeSingle();
@@ -89,7 +90,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			};
 		}) ?? [];
 
-	const siteUrl = process.env.PUBLIC_SITE_URL?.replace(/\/?$/, '') || url.origin;
+	const siteUrl = (env.PUBLIC_SITE_URL || url.origin || 'https://training-track.vercel.app').replace(
+		/\/?$/,
+		''
+	);
 
 	return {
 		clients: list

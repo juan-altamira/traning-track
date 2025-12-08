@@ -12,7 +12,10 @@ let saving = $state(false);
 let feedback = $state('');
 let statusMessage = $state('');
 
-	const SITE_URL = (data.siteUrl ?? env.PUBLIC_SITE_URL ?? 'http://localhost:5173').replace(/\/?$/, '');
+	const SITE_URL = (data.siteUrl ?? env.PUBLIC_SITE_URL ?? 'https://training-track.vercel.app').replace(
+		/\/?$/,
+		''
+	);
 	const link = `${SITE_URL}/r/${data.client.client_code}`;
 
 	const freshProgress = (): ProgressState =>

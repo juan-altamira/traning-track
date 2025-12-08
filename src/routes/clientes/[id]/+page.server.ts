@@ -3,6 +3,7 @@ import type { RoutinePlan } from '$lib/types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { nowIsoUtc } from '$lib/time';
 import type { Actions, PageServerLoad } from './$types';
+import { env } from '$env/dynamic/public';
 
 export const load: PageServerLoad = async ({ params, locals, url }) => {
 	if (!locals.session) {
@@ -53,7 +54,10 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 		await supabase.from('progress').insert({ client_id: clientId, progress });
 	}
 
-	const siteUrl = process.env.PUBLIC_SITE_URL?.replace(/\/?$/, '') || url.origin;
+	const siteUrl = (env.PUBLIC_SITE_URL || url.origin || 'https://training-track.vercel.app').replace(
+		/\/?$/,
+		''
+	);
 
 	return {
 		client,
