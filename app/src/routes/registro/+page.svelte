@@ -1,40 +1,30 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { PUBLIC_SITE_URL } from '$env/static/public';
-	import { supabaseClient } from '$lib/supabaseClient';
-	import { onMount } from 'svelte';
+import { PUBLIC_SITE_URL } from '$env/static/public';
+import { supabaseClient } from '$lib/supabaseClient';
 
-	let email = '';
-	let message = '';
-	let error = '';
-	let loading = false;
+let email = '';
+let password = '';
+let confirmPassword = '';
+let message = '';
+let error = '';
+let loading = false;
 
-	onMount(async () => {
-		const url = new URL(window.location.href);
-		const code = url.searchParams.get('code');
-		if (code) {
-			loading = true;
-			const { error: exchangeError } = await supabaseClient.auth.exchangeCodeForSession(code);
-			if (exchangeError) {
-				error = 'No pudimos validar el link. Probá de nuevo.';
-				console.error(exchangeError);
-			} else {
-				await goto('/clientes');
-			}
-			loading = false;
+const sendSignUpLink = async () => {
+	loading = true;
+	error = '';
+	message = '';
+	if (password !== confirmPassword) {
+		error = 'Las contraseñas no coinciden';
+		loading = false;
+		return;
+	}
+	const { error: signUpError } = await supabaseClient.auth.signUp({
+		email: email.trim(),
+		password,
+		options: {
+			emailRedirectTo: `${PUBLIC_SITE_URL}/registro`
 		}
 	});
-
-	const sendSignUpLink = async () => {
-		loading = true;
-		error = '';
-		message = '';
-		const { error: signUpError } = await supabaseClient.auth.signUp({
-			email: email.trim(),
-			options: {
-				emailRedirectTo: `${PUBLIC_SITE_URL}/registro`
-			}
-		});
 		if (signUpError) {
 			error = 'No pudimos enviar el link. Revisá el email e intentá de nuevo.';
 			console.error(signUpError);
@@ -63,10 +53,30 @@
 				bind:value={email}
 			/>
 		</label>
+		<label class="block text-sm font-medium text-slate-200">
+			Contraseña
+			<input
+				class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+				placeholder="••••••••"
+				type="password"
+				required
+				bind:value={password}
+			/>
+		</label>
+		<label class="block text-sm font-medium text-slate-200">
+			Confirmar contraseña
+			<input
+				class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+				placeholder="••••••••"
+				type="password"
+				required
+				bind:value={confirmPassword}
+			/>
+		</label>
 		<button
 			on:click|preventDefault={sendSignUpLink}
 			class="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
-			disabled={loading || !email}
+			disabled={loading || !email || !password || !confirmPassword}
 		>
 			{#if loading}
 				Enviando...

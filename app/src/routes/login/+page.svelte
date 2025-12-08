@@ -1,55 +1,41 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { PUBLIC_SITE_URL } from '$env/static/public';
-	import { supabaseClient } from '$lib/supabaseClient';
-	import { onMount } from 'svelte';
+import { goto } from '$app/navigation';
+import { PUBLIC_SITE_URL } from '$env/static/public';
+import { supabaseClient } from '$lib/supabaseClient';
 
-	let email = '';
-	let message = '';
-	let error = '';
-	let loading = false;
+let email = '';
+let password = '';
+let message = '';
+let error = '';
+let loading = false;
 
-	onMount(async () => {
-		const url = new URL(window.location.href);
-		const code = url.searchParams.get('code');
-		if (code) {
-			loading = true;
-			const { error: exchangeError } = await supabaseClient.auth.exchangeCodeForSession(code);
-			if (exchangeError) {
-				error = 'No pudimos validar el link. Probá de nuevo.';
-				console.error(exchangeError);
-			} else {
-				await goto('/clientes');
-			}
-			loading = false;
-		}
+const login = async () => {
+	loading = true;
+	error = '';
+	message = '';
+	const { data, error: signInError } = await supabaseClient.auth.signInWithPassword({
+		email: email.trim(),
+		password: password
 	});
-
-	const sendMagicLink = async () => {
-		loading = true;
-		error = '';
-		message = '';
-		const { error: signInError } = await supabaseClient.auth.signInWithOtp({
-			email: email.trim(),
-			options: {
-				emailRedirectTo: `${PUBLIC_SITE_URL}/login`
-			}
-		});
-		if (signInError) {
-			error = 'No pudimos enviar el link. Revisá el email e intentá de nuevo.';
-			console.error(signInError);
+	if (signInError) {
+		error = 'No pudimos iniciar sesión. Revisá email y contraseña.';
+		console.error(signInError);
+	} else {
+		if (data.session) {
+			await goto('/clientes');
 		} else {
-			message = 'Te enviamos un link. Revisá tu correo y tocá el link para entrar.';
+			message = 'Revisá tu correo para confirmar la cuenta.';
 		}
-		loading = false;
-	};
+	}
+	loading = false;
+};
 </script>
 
 <section class="mx-auto max-w-lg space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30 text-slate-100">
 	<div class="space-y-2 text-center">
 		<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">Entrar</p>
 		<h1 class="text-2xl font-semibold text-slate-50">Ingreso de entrenadores</h1>
-		<p class="text-sm text-slate-400">Usá tu email registrado y te enviamos el link de acceso.</p>
+		<p class="text-sm text-slate-400">Usá tu email y contraseña para acceder.</p>
 		<p class="text-xs text-slate-500">¿No tenés cuenta? <a class="text-emerald-300 hover:underline" href="/registro">Registrate</a></p>
 	</div>
 	<div class="space-y-4">
@@ -63,13 +49,23 @@
 				bind:value={email}
 			/>
 		</label>
+		<label class="block text-sm font-medium text-slate-200">
+			Contraseña
+			<input
+				class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+				placeholder="••••••••"
+				type="password"
+				required
+				bind:value={password}
+			/>
+		</label>
 		<button
-			on:click|preventDefault={sendMagicLink}
+			on:click|preventDefault={login}
 			class="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
-			disabled={loading || !email}
+			disabled={loading || !email || !password}
 		>
 			{#if loading}
-				Enviando...
+				Entrando...
 			{:else}
 				Entrar
 			{/if}
