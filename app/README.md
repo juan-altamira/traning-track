@@ -1,38 +1,64 @@
-# sv
+# Training Track
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Panel para entrenadores y vista pública para clientes, construido con **SvelteKit**, **TailwindCSS** y **Supabase**. Todo el flujo está orientado a:
 
-## Creating a project
+- Entrenadores: gestionar clientes, crear/editar rutinas y ver progreso básico.
+- Clientes: acceder con un link único, marcar series y ver su rutina sin registrarse.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Requisitos
 
-```sh
-# create a new project in the current directory
-npx sv create
+- Node.js 20+
+- npm (se usa en este repo)
+- Cuenta y proyecto en Supabase
 
-# create a new project in my-app
-npx sv create my-app
+## Configuración local
+
+1) Instalar dependencias:
+```bash
+npm install
 ```
 
-## Developing
+2) Configurar variables en `app/.env`:
+```
+PUBLIC_SUPABASE_URL=TU_URL
+PUBLIC_SUPABASE_ANON_KEY=TU_ANON_KEY
+SUPABASE_SERVICE_ROLE=TU_SERVICE_ROLE  # solo para endpoints de servidor
+PUBLIC_SITE_URL=http://localhost:5173   # o tu dominio en Vercel
+```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+3) Levantar en desarrollo:
+```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
+Abrí http://localhost:5173.
 
-## Building
+## Scripts útiles
 
-To create a production version of your app:
+- `npm run lint` – reglas básicas.
+- `npm run check` – tipado y chequeos de Svelte.
+- `npm run build` – compila para producción.
 
-```sh
-npm run build
-```
+## Despliegue
 
-You can preview the production build with `npm run preview`.
+1) Deploy frontend en Vercel (adaptador está por defecto).
+2) En Supabase, configura:
+   - Site URL: tu dominio (ej. `https://training-track.vercel.app`).
+   - Redirect URLs: producción + `http://localhost:5173` para pruebas.
+3) Copiá tus claves al entorno de Vercel (`PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`) y al entorno privado (`SUPABASE_SERVICE_ROLE` si usas endpoints server-side).
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Notas funcionales
+
+- El cliente sólo ve los días con ejercicios cargados.
+- El progreso se guarda en Supabase; “Reiniciar contadores” limpia días/series y actualiza las marcas de actividad/reset en UTC.
+- El entrenador tiene fondo oscuro, logout y navegación para volver al panel.
+
+## Estructura rápida
+
+- `src/routes/r/[clientCode]`: vista pública del cliente.
+- `src/routes/clientes`: listado de clientes del entrenador.
+- `src/routes/clientes/[id]`: edición de rutina y estado de un cliente.
+- `src/routes/login`, `/register`, `/reset`: flujos de acceso con email y contraseña.
+
+## Autenticación
+
+Se usa email+contraseña (Supabase Auth). Magic links se usan sólo para alta o recuperación según configuración de Supabase. Ajustá las plantillas de correo desde el panel de Supabase si querés personalizar los textos o el destino (`/login`).

@@ -2,9 +2,12 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.postcss';
 	import type { Session } from '@supabase/supabase-js';
+	import { page } from '$app/stores';
 
 	let { children, data } = $props();
 	let session = (data?.session ?? null) as Session | null;
+
+	const hideAuthActions = $derived($page.url.pathname.startsWith('/r/'));
 </script>
 
 <svelte:head>
@@ -23,24 +26,26 @@
 					<p class="text-lg font-semibold leading-tight text-slate-100">Training Track</p>
 				</div>
 			</div>
-			{#if session}
-				<div class="flex items-center gap-3 text-sm">
-					<span class="text-slate-300 hidden sm:inline">{session.user.email}</span>
-					<form method="POST" action="/logout" class="inline">
-						<button
-							type="submit"
-							class="rounded-lg border border-slate-700 bg-[#151827] px-3 py-1.5 text-slate-100 transition hover:bg-[#1b1f30]"
-						>
-							Cerrar sesión
-						</button>
-					</form>
-				</div>
-			{:else}
-				<a
-					class="rounded-lg border border-slate-700 bg-[#151827] px-3 py-1.5 text-slate-100 transition hover:bg-[#1b1f30] text-sm"
-					href="/login"
-					>Entrar</a
-				>
+			{#if !hideAuthActions}
+				{#if session}
+					<div class="flex items-center gap-3 text-sm">
+						<span class="text-slate-300 hidden sm:inline">{session.user.email}</span>
+						<form method="POST" action="/logout" class="inline">
+							<button
+								type="submit"
+								class="rounded-lg border border-slate-700 bg-[#151827] px-3 py-1.5 text-slate-100 transition hover:bg-[#1b1f30]"
+							>
+								Cerrar sesión
+							</button>
+						</form>
+					</div>
+				{:else}
+					<a
+						class="rounded-lg border border-slate-700 bg-[#151827] px-3 py-1.5 text-slate-100 transition hover:bg-[#1b1f30] text-sm"
+						href="/login"
+						>Entrar</a
+					>
+				{/if}
 			{/if}
 		</div>
 	</header>
