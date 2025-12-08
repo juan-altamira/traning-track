@@ -44,7 +44,6 @@ onMount(async () => {
 			message = 'Link verificado. Ingresá tu nueva contraseña.';
 		}
 		loading = false;
-		return;
 	}
 
 	// Fallback: code param (older flow)
@@ -60,6 +59,15 @@ onMount(async () => {
 			message = 'Link verificado. Ingresá tu nueva contraseña.';
 		}
 		loading = false;
+	}
+
+	// Si ya hay sesión (por ejemplo setSession se aplicó en otro momento), pasar a update
+	const { data: sessionData } = await supabaseClient.auth.getSession();
+	if (sessionData.session) {
+		mode = 'update';
+		if (!message) {
+			message = 'Link verificado. Ingresá tu nueva contraseña.';
+		}
 	}
 });
 
