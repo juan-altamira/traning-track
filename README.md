@@ -18,7 +18,7 @@ Panel para entrenadores y vista pública para clientes, construido con **SvelteK
 npm install
 ```
 
-2) Configurar variables en `app/.env`:
+2) Configurar variables en `.env` (en la raíz):
 ```
 PUBLIC_SUPABASE_URL=TU_URL
 PUBLIC_SUPABASE_ANON_KEY=TU_ANON_KEY
@@ -34,13 +34,12 @@ Abrí http://localhost:5173.
 
 ## Scripts útiles
 
-- `npm run lint` – reglas básicas.
 - `npm run check` – tipado y chequeos de Svelte.
 - `npm run build` – compila para producción.
 
 ## Despliegue
 
-1) Deploy frontend en Vercel (adaptador está por defecto).
+1) Deploy frontend en Vercel (se usa `@sveltejs/adapter-vercel`).
 2) En Supabase, configura:
    - Site URL: tu dominio (ej. `https://training-track.vercel.app`).
    - Redirect URLs: producción + `http://localhost:5173` para pruebas.
