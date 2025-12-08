@@ -1,6 +1,6 @@
 <script lang="ts">
 import { goto } from '$app/navigation';
-import { PUBLIC_SITE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { supabaseClient } from '$lib/supabaseClient';
 
 	let email = '';
@@ -9,6 +9,7 @@ import { supabaseClient } from '$lib/supabaseClient';
 	let error = '';
 	let loading = false;
 	let showPassword = false;
+	const SITE_URL = (env.PUBLIC_SITE_URL ?? 'http://localhost:5173').replace(/\/?$/, '');
 
 const login = async () => {
 	loading = true;
@@ -92,6 +93,6 @@ const login = async () => {
 		{/if}
 	</div>
 	<p class="text-xs text-slate-500 text-center">
-		Redirect configurado en Supabase: {PUBLIC_SITE_URL}/login
+		Redirect configurado en Supabase: {SITE_URL}/login
 	</p>
 </section>

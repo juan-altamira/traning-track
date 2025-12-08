@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { PUBLIC_SITE_URL } from '$env/static/public';
-	import { WEEK_DAYS, getTargetSets } from '$lib/routines';
-	import type { ProgressState, RoutineExercise, RoutinePlan } from '$lib/types';
+import { env } from '$env/dynamic/public';
+import { WEEK_DAYS, getTargetSets } from '$lib/routines';
+import type { ProgressState, RoutineExercise, RoutinePlan } from '$lib/types';
 
 let { data } = $props();
 
@@ -12,7 +12,8 @@ let saving = $state(false);
 let feedback = $state('');
 let statusMessage = $state('');
 
-	const link = `${PUBLIC_SITE_URL.replace(/\/?$/, '')}/r/${data.client.client_code}`;
+	const SITE_URL = (env.PUBLIC_SITE_URL ?? 'http://localhost:5173').replace(/\/?$/, '');
+	const link = `${SITE_URL}/r/${data.client.client_code}`;
 
 	const freshProgress = (): ProgressState =>
 		WEEK_DAYS.reduce((acc, day) => {

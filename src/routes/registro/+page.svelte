@@ -1,5 +1,5 @@
 <script lang="ts">
-import { PUBLIC_SITE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { supabaseClient } from '$lib/supabaseClient';
 
 let email = '';
@@ -10,6 +10,7 @@ let error = '';
 let loading = false;
 let showPassword = false;
 let showConfirm = false;
+const SITE_URL = (env.PUBLIC_SITE_URL ?? 'http://localhost:5173').replace(/\/?$/, '');
 
 const sendSignUpLink = async () => {
 	loading = true;
@@ -24,7 +25,7 @@ const sendSignUpLink = async () => {
 		email: email.trim(),
 		password,
 		options: {
-			emailRedirectTo: `${PUBLIC_SITE_URL}/registro`
+			emailRedirectTo: `${SITE_URL}/registro`
 		}
 	});
 		if (signUpError) {
@@ -114,6 +115,6 @@ const sendSignUpLink = async () => {
 		{/if}
 	</div>
 	<p class="text-xs text-slate-500 text-center">
-		Redirect configurado en Supabase: {PUBLIC_SITE_URL}/registro
+		Redirect configurado en Supabase: {SITE_URL}/registro
 	</p>
 </section>

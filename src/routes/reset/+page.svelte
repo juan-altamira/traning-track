@@ -1,6 +1,6 @@
 <script lang="ts">
 import { goto } from '$app/navigation';
-import { PUBLIC_SITE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { supabaseClient } from '$lib/supabaseClient';
 import { onMount } from 'svelte';
 
@@ -13,6 +13,7 @@ let message = '';
 let error = '';
 let loading = false;
 let mode: 'request' | 'update' = 'request';
+const SITE_URL = (env.PUBLIC_SITE_URL ?? 'http://localhost:5173').replace(/\/?$/, '');
 
 const parseHashParams = (hash: string) => {
 	const params = new URLSearchParams(hash.replace(/^#/, ''));
@@ -76,7 +77,7 @@ onMount(async () => {
 		error = '';
 		message = '';
 		const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email.trim(), {
-			redirectTo: `${PUBLIC_SITE_URL}/reset`
+			redirectTo: `${SITE_URL}/reset`
 		});
 		if (resetError) {
 			error = 'No pudimos enviar el link. Revisá el email e intentá de nuevo.';

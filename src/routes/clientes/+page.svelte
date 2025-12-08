@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { PUBLIC_SITE_URL } from '$env/static/public';
+	import { env } from '$env/dynamic/public';
 	import type { ClientSummary } from '$lib/types';
 	import { goto } from '$app/navigation';
 
 	let { data, form } = $props();
 	let clients = (data?.clients ?? []) as ClientSummary[];
+	const SITE_URL = (env.PUBLIC_SITE_URL ?? 'http://localhost:5173').replace(/\/?$/, '');
 
 	const copyLink = async (client: ClientSummary) => {
-		const link = `${PUBLIC_SITE_URL.replace(/\/?$/, '')}/r/${client.client_code}`;
+		const link = `${SITE_URL}/r/${client.client_code}`;
 		await navigator.clipboard.writeText(link);
 		alert('Link copiado');
 	};
