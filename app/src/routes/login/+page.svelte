@@ -37,7 +37,10 @@ const login = async () => {
 		<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">Entrar</p>
 		<h1 class="text-2xl font-semibold text-slate-50">Ingreso de entrenadores</h1>
 		<p class="text-sm text-slate-400">Usá tu email y contraseña para acceder.</p>
-		<p class="text-xs text-slate-500">¿No tenés cuenta? <a class="text-emerald-300 hover:underline" href="/registro">Registrate</a></p>
+		<p class="text-xs text-slate-500">
+			¿No tenés cuenta? <a class="text-emerald-300 hover:underline" href="/registro">Registrate</a> ·
+			<a class="text-emerald-300 hover:underline" href="/reset">¿Olvidaste tu contraseña?</a>
+		</p>
 	</div>
 	<div class="space-y-4">
 		<label class="block text-sm font-medium text-slate-200">
