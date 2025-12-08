@@ -11,6 +11,7 @@
 	let expanded = $state<Record<string, boolean>>({});
 	let saving = $state(false);
 	let message = $state('');
+	let showResetConfirm = $state(false);
 
 	const adjustSets = (dayKey: string, exerciseId: string, delta: number) => {
 		const dayPlan = plan[dayKey];
@@ -63,6 +64,29 @@
 			message = 'Progreso guardado';
 		}
 		saving = false;
+	};
+
+	const resetProgress = async () => {
+		saving = true;
+		message = '';
+		const res = await fetch('?/resetProgress', { method: 'POST' });
+		if (res.ok) {
+			const data = await res.json();
+			if (data?.progress) {
+				progress = data.progress as ProgressState;
+			} else {
+				const cleared: ProgressState = {} as ProgressState;
+				for (const day of WEEK_DAYS) {
+					cleared[day.key] = { completed: false, exercises: {} };
+				}
+				progress = cleared;
+			}
+			message = 'Contadores reiniciados';
+		} else {
+			message = 'No se pudo reiniciar. Intentá de nuevo.';
+		}
+		saving = false;
+		showResetConfirm = false;
 	};
 </script>
 
@@ -149,6 +173,27 @@
 			<p class="feedback success">{message}</p>
 		{:else if saving}
 			<p class="feedback muted">Guardando...</p>
+		{/if}
+
+		<button class="reset-btn" type="button" onclick={() => (showResetConfirm = true)}>
+			Reiniciar contadores
+		</button>
+
+		{#if showResetConfirm}
+			<div class="modal-backdrop" role="dialog" aria-modal="true">
+				<div class="modal">
+					<h2>Reiniciar contadores</h2>
+					<p>Al confirmar, reiniciarás todas las series y días completados. ¿Querés continuar?</p>
+					<div class="modal-actions">
+						<button class="btn ghost" type="button" onclick={() => (showResetConfirm = false)}>
+							Cancelar
+						</button>
+						<button class="btn danger" type="button" onclick={resetProgress}>
+							Confirmar
+						</button>
+					</div>
+				</div>
+			</div>
 		{/if}
 	</section>
 {/if}
@@ -350,6 +395,72 @@
 		background: #0f111b;
 		color: #9aa0b6;
 		border: 1px solid #1f2333;
+	}
+	.reset-btn {
+		width: 100%;
+		margin-top: 0.75rem;
+		background: #111423;
+		color: #e4e7ec;
+		border: 1px solid #1f2333;
+		border-radius: 12px;
+		padding: 0.75rem 1rem;
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+	}
+	.reset-btn:hover {
+		background: #15192a;
+	}
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.55);
+		display: grid;
+		place-items: center;
+		padding: 1rem;
+		z-index: 50;
+		backdrop-filter: blur(3px);
+	}
+	.modal {
+		background: #0f111b;
+		border: 1px solid #1f2333;
+		color: #e4e7ec;
+		padding: 1.25rem;
+		border-radius: 16px;
+		max-width: 420px;
+		width: 100%;
+		box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+	}
+	.modal h2 {
+		margin: 0 0 0.35rem 0;
+		font-size: 1.2rem;
+	}
+	.modal p {
+		margin: 0;
+		color: #c4c8d4;
+	}
+	.modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		margin-top: 1rem;
+	}
+	.btn {
+		border: 1px solid transparent;
+		border-radius: 10px;
+		padding: 0.6rem 0.9rem;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.btn.ghost {
+		background: #111423;
+		color: #c4c8d4;
+		border-color: #1f2333;
+	}
+	.btn.danger {
+		background: #b4231b;
+		color: #fff;
+		border-color: #e54848;
 	}
 
 	@media (min-width: 768px) {

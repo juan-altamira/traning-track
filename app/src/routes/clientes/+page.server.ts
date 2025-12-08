@@ -1,5 +1,6 @@
 import { createEmptyPlan, normalizeProgress, WEEK_DAYS } from '$lib/routines';
 import type { ClientSummary } from '$lib/types';
+import { daysBetweenUtc, getCurrentWeekStartUtc, nowIsoUtc } from '$lib/time';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -38,7 +39,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const clientIds = clients?.map((c) => c.id) ?? [];
-	const progressMap = new Map<string, { last_completed_at: string | null; progress: unknown }>();
+	const progressMap = new Map<
+		string,
+		{ last_completed_at: string | null; progress: any }
+	>();
 
 	if (clientIds.length > 0) {
 		const { data: progressRows, error: progressError } = await supabase
@@ -65,6 +69,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			const progressState = normalizeProgress(info?.progress as any);
 			const lastCompleted =
 				WEEK_DAYS.filter((day) => progressState[day.key]?.completed).at(-1)?.label ?? null;
+			const nowUtc = nowIsoUtc();
+			const weekStart = getCurrentWeekStartUtc();
+			const lastReset = progressState._meta?.last_reset_utc ?? null;
+			const lastActivity = progressState._meta?.last_activity_utc ?? info?.last_completed_at ?? null;
 
 			return {
 				id: client.id,
@@ -73,7 +81,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 				status: client.status as ClientSummary['status'],
 				objective: client.objective,
 				last_completed_at: info?.last_completed_at ?? null,
-				last_day_completed: lastCompleted
+				last_day_completed: lastCompleted,
+				last_activity_utc: lastActivity,
+				last_reset_utc: lastReset,
+				week_started: lastReset ? lastReset >= weekStart : false,
+				days_since_activity: daysBetweenUtc(lastActivity, nowUtc)
 			};
 		}) ?? [];
 
@@ -119,9 +131,12 @@ export const actions: Actions = {
 			.from('routines')
 			.insert({ client_id: client.id, plan: defaultPlan });
 
-		const { error: progressError } = await supabase
-			.from('progress')
-			.insert({ client_id: client.id, progress: normalizeProgress() });
+		const nowUtc = nowIsoUtc();
+		const { error: progressError } = await supabase.from('progress').insert({
+			client_id: client.id,
+			progress: normalizeProgress(null, { last_reset_utc: nowUtc, last_activity_utc: nowUtc }),
+			last_completed_at: null
+		});
 
 		if (routineError || progressError) {
 			console.error({ routineError, progressError });

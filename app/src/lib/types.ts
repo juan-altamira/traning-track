@@ -21,7 +21,14 @@ export type ProgressDay = {
 	lastUpdated?: string;
 };
 
-export type ProgressState = Record<string, ProgressDay>;
+export type ProgressMeta = {
+	last_reset_utc?: string | null;
+	last_activity_utc?: string | null;
+};
+
+export type ProgressState = Record<string, ProgressDay> & {
+	_meta?: ProgressMeta;
+};
 
 export type ClientSummary = {
 	id: string;
@@ -31,4 +38,8 @@ export type ClientSummary = {
 	objective?: string | null;
 	last_completed_at?: string | null;
 	last_day_completed?: string | null;
+	last_activity_utc?: string | null;
+	last_reset_utc?: string | null;
+	week_started?: boolean;
+	days_since_activity?: number | null;
 };

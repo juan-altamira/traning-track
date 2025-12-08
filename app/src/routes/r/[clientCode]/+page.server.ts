@@ -1,7 +1,8 @@
-import { normalizePlan, normalizeProgress } from '$lib/routines';
+import { normalizePlan, normalizeProgress, WEEK_DAYS } from '$lib/routines';
 import { supabaseAdmin } from '$lib/server/supabaseAdmin';
 import type { ProgressState, RoutinePlan } from '$lib/types';
 import { error, fail } from '@sveltejs/kit';
+import { nowIsoUtc } from '$lib/time';
 import type { Actions, PageServerLoad } from './$types';
 
 const fetchClient = async (clientCode: string) => {
@@ -96,14 +97,18 @@ export const actions: Actions = {
 			return fail(400, { message: 'Formato inválido' });
 		}
 
-		const progress = normalizeProgress(parsed);
-		const anyCompleted = Object.values(progress).some((day) => day.completed);
+		const nowUtc = nowIsoUtc();
+		const progress = normalizeProgress(parsed, {
+			last_activity_utc: nowUtc,
+			last_reset_utc: parsed?._meta?.last_reset_utc ?? null
+		});
+		const anyCompleted = WEEK_DAYS.some((day) => progress[day.key]?.completed);
 
 		const { error: updateError } = await supabaseAdmin
 			.from('progress')
 			.update({
 				progress,
-				last_completed_at: anyCompleted ? new Date().toISOString() : null
+				last_completed_at: anyCompleted ? nowUtc : null
 			})
 			.eq('client_id', client.id);
 
@@ -113,5 +118,31 @@ export const actions: Actions = {
 		}
 
 		return { success: true };
+	},
+	resetProgress: async ({ params }) => {
+		const clientCode = params.clientCode;
+		const { data: client } = await fetchClient(clientCode);
+
+		if (!client || client.status !== 'active') {
+			return fail(403, { message: 'Acceso desactivado' });
+		}
+
+		const nowUtc = nowIsoUtc();
+		const cleared = normalizeProgress(null, {
+			last_activity_utc: nowUtc,
+			last_reset_utc: nowUtc
+		});
+
+		const { error: updateError } = await supabaseAdmin
+			.from('progress')
+			.update({ progress: cleared, last_completed_at: null })
+			.eq('client_id', client.id);
+
+		if (updateError) {
+			console.error(updateError);
+			return fail(500, { message: 'No pudimos reiniciar' });
+		}
+
+		return { success: true, progress: cleared };
 	}
 };

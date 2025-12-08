@@ -21,7 +21,6 @@
 				</div>
 				<div>
 					<p class="text-lg font-semibold leading-tight">Training Track</p>
-					<p class="text-xs text-slate-500">Rutinas simples para entrenadores</p>
 				</div>
 			</div>
 			{#if session}

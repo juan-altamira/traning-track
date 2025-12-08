@@ -1,4 +1,4 @@
-import type { ProgressState, RoutineDay, RoutineExercise, RoutinePlan } from './types';
+import type { ProgressMeta, ProgressState, RoutineDay, RoutineExercise, RoutinePlan } from './types';
 
 export const WEEK_DAYS: RoutineDay[] = [
 	{ key: 'monday', label: 'Lunes', exercises: [] },
@@ -42,8 +42,11 @@ export const normalizePlan = (plan?: RoutinePlan | null): RoutinePlan => {
 	return base;
 };
 
-export const normalizeProgress = (progress?: ProgressState | null): ProgressState => {
-	return WEEK_DAYS.reduce((acc, day) => {
+export const normalizeProgress = (
+	progress?: ProgressState | null,
+	meta?: ProgressMeta
+): ProgressState => {
+	const base = WEEK_DAYS.reduce((acc, day) => {
 		const state = progress?.[day.key];
 		acc[day.key] = {
 			completed: state?.completed ?? false,
@@ -52,6 +55,13 @@ export const normalizeProgress = (progress?: ProgressState | null): ProgressStat
 		};
 		return acc;
 	}, {} as ProgressState);
+
+	base._meta = {
+		last_activity_utc: meta?.last_activity_utc ?? progress?._meta?.last_activity_utc ?? null,
+		last_reset_utc: meta?.last_reset_utc ?? progress?._meta?.last_reset_utc ?? null
+	};
+
+	return base;
 };
 
 export const parseTotalSets = (scheme: string): number | undefined => {

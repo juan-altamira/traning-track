@@ -18,6 +18,20 @@
 		return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
 	};
 
+	const activityLabel = (days?: number | null) => {
+		if (days == null) return 'Sin actividad registrada';
+		if (days === 0) return 'Hoy';
+		if (days === 1) return 'Hace 1 día';
+		return `Hace ${days} días`;
+	};
+
+	const activityColor = (days?: number | null) => {
+		if (days == null) return 'text-slate-500';
+		if (days < 3) return 'text-emerald-600';
+		if (days <= 7) return 'text-amber-600';
+		return 'text-red-600';
+	};
+
 	const handleCreated = () => {
 		if (form?.message) {
 			alert(form.message as string);
@@ -66,12 +80,20 @@
 							</div>
 							<div class="text-sm text-slate-600">
 								<p>
-									Último día completado:
+									Semana actual:
 									<span class="font-medium">
-										{client.last_day_completed ?? '—'}
+										{client.week_started ? 'Iniciada' : 'No iniciada'}
 									</span>
 								</p>
-								<p>Actualización: {humanDate(client.last_completed_at)}</p>
+								<p>
+									Última actividad:
+									<span class={`font-semibold ${activityColor(client.days_since_activity)}`}>
+										{activityLabel(client.days_since_activity)}
+									</span>
+								</p>
+								<p class="text-xs text-slate-500">
+									Último día completado: {client.last_day_completed ?? '—'} · {humanDate(client.last_completed_at)}
+								</p>
 							</div>
 							<div class="mt-auto flex flex-wrap gap-2">
 								<button

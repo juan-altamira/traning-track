@@ -1,6 +1,7 @@
 import { normalizePlan, normalizeProgress } from '$lib/routines';
 import type { RoutinePlan } from '$lib/types';
 import { error, fail, redirect } from '@sveltejs/kit';
+import { nowIsoUtc } from '$lib/time';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -79,6 +80,7 @@ export const actions: Actions = {
 
 		const plan = normalizePlan(parsed);
 		const supabase = locals.supabase;
+		const nowUtc = nowIsoUtc();
 
 		const { error: updateError } = await supabase
 			.from('routines')
@@ -96,7 +98,10 @@ export const actions: Actions = {
 
 		await supabase
 			.from('progress')
-			.update({ progress: normalizeProgress(), last_completed_at: null })
+			.update({
+				progress: normalizeProgress(null, { last_reset_utc: nowUtc, last_activity_utc: nowUtc }),
+				last_completed_at: null
+			})
 			.eq('client_id', params.id);
 
 		return { success: true };
@@ -106,9 +111,13 @@ export const actions: Actions = {
 			throw redirect(303, '/login');
 		}
 
+		const nowUtc = nowIsoUtc();
 		await locals.supabase
 			.from('progress')
-			.update({ progress: normalizeProgress(), last_completed_at: null })
+			.update({
+				progress: normalizeProgress(null, { last_reset_utc: nowUtc, last_activity_utc: nowUtc }),
+				last_completed_at: null
+			})
 			.eq('client_id', params.id);
 
 		return { success: true };
