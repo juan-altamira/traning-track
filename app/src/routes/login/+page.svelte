@@ -49,7 +49,7 @@
 	<div class="space-y-2 text-center">
 		<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">Entrar</p>
 		<h1 class="text-2xl font-semibold text-slate-50">Ingreso de entrenadores</h1>
-		<p class="text-sm text-slate-400">Usá tu email registrado. Te enviamos un magic link.</p>
+		<p class="text-sm text-slate-400">Usá tu email registrado y te enviamos el link de acceso.</p>
 		<p class="text-xs text-slate-500">¿No tenés cuenta? <a class="text-emerald-300 hover:underline" href="/registro">Registrate</a></p>
 	</div>
 	<div class="space-y-4">
@@ -71,7 +71,7 @@
 			{#if loading}
 				Enviando...
 			{:else}
-				Enviar link de acceso
+				Entrar
 			{/if}
 		</button>
 		{#if message}
