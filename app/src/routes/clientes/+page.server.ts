@@ -3,10 +3,28 @@ import type { ClientSummary } from '$lib/types';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+const ensureTrainerExists = async (supabase: App.Locals['supabase'], userId: string, email: string) => {
+	const { data, error } = await supabase.from('trainers').select('id').eq('id', userId).maybeSingle();
+	if (error) {
+		console.error('trainer lookup error', error);
+		return;
+	}
+	if (!data) {
+		const { error: insertError } = await supabase
+			.from('trainers')
+			.insert({ id: userId, email, status: 'active' });
+		if (insertError) {
+			console.error('trainer insert error', insertError);
+		}
+	}
+};
+
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.session) {
 		throw redirect(303, '/login');
 	}
+
+	await ensureTrainerExists(locals.supabase, locals.session.user.id, locals.session.user.email ?? '');
 
 	const supabase = locals.supabase;
 	const { data: clients, error } = await supabase
@@ -69,6 +87,9 @@ export const actions: Actions = {
 		if (!locals.session) {
 			throw redirect(303, '/login');
 		}
+
+		await ensureTrainerExists(locals.supabase, locals.session.user.id, locals.session.user.email ?? '');
+
 		const formData = await request.formData();
 		const name = String(formData.get('name') || '').trim();
 		const objective = String(formData.get('objective') || '').trim() || null;
