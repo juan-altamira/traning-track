@@ -8,6 +8,8 @@ let confirmPassword = '';
 let message = '';
 let error = '';
 let loading = false;
+let showPassword = false;
+let showConfirm = false;
 
 const sendSignUpLink = async () => {
 	loading = true;
@@ -55,23 +57,43 @@ const sendSignUpLink = async () => {
 		</label>
 		<label class="block text-sm font-medium text-slate-200">
 			Contraseña
-			<input
-				class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
-				placeholder="••••••••"
-				type="password"
-				required
-				bind:value={password}
-			/>
+			<div class="relative mt-1">
+				<input
+					class="w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 pr-10 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+					placeholder="••••••••"
+					type={showPassword ? 'text' : 'password'}
+					required
+					bind:value={password}
+				/>
+				<button
+					type="button"
+					class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200"
+					on:click={() => (showPassword = !showPassword)}
+					aria-label="Mostrar u ocultar contraseña"
+				>
+					{showPassword ? 'Ocultar' : 'Ver'}
+				</button>
+			</div>
 		</label>
 		<label class="block text-sm font-medium text-slate-200">
 			Confirmar contraseña
-			<input
-				class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
-				placeholder="••••••••"
-				type="password"
-				required
-				bind:value={confirmPassword}
-			/>
+			<div class="relative mt-1">
+				<input
+					class="w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 pr-10 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+					placeholder="••••••••"
+					type={showConfirm ? 'text' : 'password'}
+					required
+					bind:value={confirmPassword}
+				/>
+				<button
+					type="button"
+					class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200"
+					on:click={() => (showConfirm = !showConfirm)}
+					aria-label="Mostrar u ocultar contraseña"
+				>
+					{showConfirm ? 'Ocultar' : 'Ver'}
+				</button>
+			</div>
 		</label>
 		<button
 			on:click|preventDefault={sendSignUpLink}
