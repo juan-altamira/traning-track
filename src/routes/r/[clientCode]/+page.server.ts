@@ -14,6 +14,26 @@ const fetchClient = async (clientCode: string) => {
 	return { data, clientError };
 };
 
+const isTrainerAllowed = async (trainerId: string) => {
+	const { data: trainer } = await supabaseAdmin
+		.from('trainers')
+		.select('status,email')
+		.eq('id', trainerId)
+		.maybeSingle();
+
+	if (!trainer) return false;
+
+	const { data: accessRow } = await supabaseAdmin
+		.from('trainer_access')
+		.select('active')
+		.eq('email', trainer.email?.toLowerCase())
+		.maybeSingle();
+
+	const accessActive = accessRow?.active === true;
+	const statusActive = trainer.status === 'active';
+	return accessActive && statusActive;
+};
+
 export const load: PageServerLoad = async ({ params }) => {
 	const clientCode = params.clientCode;
 	const { data: client, clientError } = await fetchClient(clientCode);
@@ -27,13 +47,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		return { status: 'invalid' as const };
 	}
 
-	const { data: trainer } = await supabaseAdmin
-		.from('trainers')
-		.select('status')
-		.eq('id', client.trainer_id)
-		.maybeSingle();
-
-	const trainerInactive = trainer && trainer.status !== 'active';
+	const trainerAllowed = await isTrainerAllowed(client.trainer_id);
+	const trainerInactive = !trainerAllowed;
 	const clientInactive = client.status !== 'active';
 
 	if (trainerInactive || clientInactive) {
@@ -82,7 +97,9 @@ export const actions: Actions = {
 		const clientCode = params.clientCode;
 		const { data: client } = await fetchClient(clientCode);
 
-		if (!client || client.status !== 'active') {
+		const trainerAllowed = client?.trainer_id ? await isTrainerAllowed(client.trainer_id) : false;
+
+		if (!client || client.status !== 'active' || !trainerAllowed) {
 			return fail(403, { message: 'Acceso desactivado' });
 		}
 
@@ -123,7 +140,9 @@ export const actions: Actions = {
 		const clientCode = params.clientCode;
 		const { data: client } = await fetchClient(clientCode);
 
-		if (!client || client.status !== 'active') {
+		const trainerAllowed = client?.trainer_id ? await isTrainerAllowed(client.trainer_id) : false;
+
+		if (!client || client.status !== 'active' || !trainerAllowed) {
 			return fail(403, { message: 'Acceso desactivado' });
 		}
 

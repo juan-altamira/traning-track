@@ -4,10 +4,30 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { nowIsoUtc } from '$lib/time';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/public';
+import { supabaseAdmin } from '$lib/server/supabaseAdmin';
+
+const OWNER_EMAIL = 'juanpabloaltamira@protonmail.com';
+
+const ensureTrainerAccess = async (rawEmail: string | null | undefined) => {
+	const email = rawEmail?.toLowerCase();
+	if (!email) return false;
+	if (email === OWNER_EMAIL) return true;
+	const { data } = await supabaseAdmin
+		.from('trainer_access')
+		.select('active')
+		.eq('email', email)
+		.maybeSingle();
+	return data?.active === true;
+};
 
 export const load: PageServerLoad = async ({ params, locals, url }) => {
 	if (!locals.session) {
 		throw redirect(303, '/login');
+	}
+
+	const allowed = await ensureTrainerAccess(locals.session.user.email);
+	if (!allowed) {
+		throw redirect(303, '/login?disabled=1');
 	}
 
 	const supabase = locals.supabase;
@@ -75,6 +95,11 @@ export const actions: Actions = {
 			throw redirect(303, '/login');
 		}
 
+		const allowed = await ensureTrainerAccess(locals.session.user.email);
+		if (!allowed) {
+			throw redirect(303, '/login?disabled=1');
+		}
+
 		const formData = await request.formData();
 		const rawPlan = String(formData.get('plan') || '');
 
@@ -119,6 +144,11 @@ export const actions: Actions = {
 			throw redirect(303, '/login');
 		}
 
+		const allowed = await ensureTrainerAccess(locals.session.user.email);
+		if (!allowed) {
+			throw redirect(303, '/login?disabled=1');
+		}
+
 		const nowUtc = nowIsoUtc();
 		await locals.supabase
 			.from('progress')
@@ -134,6 +164,11 @@ export const actions: Actions = {
 		if (!locals.session) {
 			throw redirect(303, '/login');
 		}
+
+		const allowed = await ensureTrainerAccess(locals.session.user.email);
+		if (!allowed) {
+			throw redirect(303, '/login?disabled=1');
+		}
 		const formData = await request.formData();
 		const status = String(formData.get('status') || 'active');
 		await locals.supabase.from('clients').update({ status }).eq('id', params.id);
@@ -142,6 +177,11 @@ export const actions: Actions = {
 	delete: async ({ request, params, locals }) => {
 		if (!locals.session) {
 			throw redirect(303, '/login');
+		}
+
+		const allowed = await ensureTrainerAccess(locals.session.user.email);
+		if (!allowed) {
+			throw redirect(303, '/login?disabled=1');
 		}
 
 		const formData = await request.formData();

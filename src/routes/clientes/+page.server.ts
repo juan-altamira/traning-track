@@ -4,6 +4,21 @@ import { daysBetweenUtc, getCurrentWeekStartUtc, nowIsoUtc } from '$lib/time';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/public';
+import { supabaseAdmin } from '$lib/server/supabaseAdmin';
+
+const OWNER_EMAIL = 'juanpabloaltamira@protonmail.com';
+
+const ensureTrainerAccess = async (rawEmail: string | null | undefined) => {
+	const email = rawEmail?.toLowerCase();
+	if (!email) return false;
+	if (email === OWNER_EMAIL) return true;
+	const { data } = await supabaseAdmin
+		.from('trainer_access')
+		.select('active')
+		.eq('email', email)
+		.maybeSingle();
+	return data?.active === true;
+};
 
 const ensureTrainerExists = async (supabase: App.Locals['supabase'], userId: string, email: string) => {
 	const { data, error } = await supabase.from('trainers').select('id').eq('id', userId).maybeSingle();
@@ -21,9 +36,60 @@ const ensureTrainerExists = async (supabase: App.Locals['supabase'], userId: str
 	}
 };
 
+const fetchTrainerAdminData = async () => {
+	const { data: accessRows } = await supabaseAdmin
+		.from('trainer_access')
+		.select('email,active,created_at,updated_at')
+		.order('created_at', { ascending: true });
+
+	const { data: trainerRows } = await supabaseAdmin
+		.from('trainers')
+		.select('id,email,status,created_at')
+		.order('created_at', { ascending: true });
+
+	const byEmail = new Map<
+		string,
+		{
+			email: string;
+			active: boolean;
+			trainer_id?: string;
+			status?: string | null;
+			created_at?: string | null;
+		}
+	>();
+
+	accessRows?.forEach((row) => {
+		if (!row.email) return;
+		byEmail.set(row.email.toLowerCase(), {
+			email: row.email,
+			active: row.active === true,
+			created_at: row.created_at
+		});
+	});
+
+	trainerRows?.forEach((row) => {
+		if (!row.email) return;
+		const key = row.email.toLowerCase();
+		const current = byEmail.get(key) ?? { email: row.email, active: false };
+		byEmail.set(key, {
+			...current,
+			trainer_id: row.id,
+			status: row.status,
+			created_at: current.created_at ?? row.created_at
+		});
+	});
+
+	return Array.from(byEmail.values());
+};
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.session) {
 		throw redirect(303, '/login');
+	}
+
+	const allowed = await ensureTrainerAccess(locals.session.user.email);
+	if (!allowed) {
+		throw redirect(303, '/login?disabled=1');
 	}
 
 	await ensureTrainerExists(locals.supabase, locals.session.user.id, locals.session.user.email ?? '');
@@ -96,9 +162,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		(envSite && !envSite.includes('localhost') ? envSite : origin) ||
 		'https://training-track.vercel.app';
 
+	const isOwner = locals.session.user.email?.toLowerCase() === OWNER_EMAIL;
+	const trainerAdmin = isOwner ? await fetchTrainerAdminData() : null;
+
 	return {
 		clients: list,
-		siteUrl
+		siteUrl,
+		trainerAdmin,
+		isOwner
 	};
 };
 
@@ -106,6 +177,11 @@ export const actions: Actions = {
 	create: async ({ request, locals }) => {
 		if (!locals.session) {
 			throw redirect(303, '/login');
+		}
+
+		const allowed = await ensureTrainerAccess(locals.session.user.email);
+		if (!allowed) {
+			throw redirect(303, '/login?disabled=1');
 		}
 
 		await ensureTrainerExists(locals.supabase, locals.session.user.id, locals.session.user.email ?? '');
@@ -151,6 +227,62 @@ export const actions: Actions = {
 		}
 
 		throw redirect(303, `/clientes/${client.id}`);
+	},
+	addTrainer: async ({ request, locals }) => {
+		if (locals.session?.user.email?.toLowerCase() !== OWNER_EMAIL) {
+			throw redirect(303, '/login');
+		}
+
+		const formData = await request.formData();
+		const email = String(formData.get('email') || '').trim().toLowerCase();
+		if (!email) {
+			return fail(400, { message: 'Email requerido' });
+		}
+
+		await supabaseAdmin.from('trainer_access').upsert({ email, active: true });
+		await supabaseAdmin.from('trainers').update({ status: 'active' }).eq('email', email);
+
+		return { success: true };
+	},
+	toggleTrainer: async ({ request, locals }) => {
+		if (locals.session?.user.email?.toLowerCase() !== OWNER_EMAIL) {
+			throw redirect(303, '/login');
+		}
+
+		const formData = await request.formData();
+		const email = String(formData.get('email') || '').trim().toLowerCase();
+		const nextActive = String(formData.get('next_active') || 'false') === 'true';
+
+		if (!email) {
+			return fail(400, { message: 'Email requerido' });
+		}
+
+		await supabaseAdmin.from('trainer_access').upsert({ email, active: nextActive });
+		await supabaseAdmin.from('trainers').update({ status: nextActive ? 'active' : 'inactive' }).eq('email', email);
+
+		if (!nextActive) {
+			const { data: trainer } = await supabaseAdmin.from('trainers').select('id').eq('email', email).maybeSingle();
+			if (trainer?.id) {
+				await supabaseAdmin.auth.admin.signOut({ user_id: trainer.id });
+			}
+		}
+
+		return { success: true };
+	},
+	forceSignOut: async ({ request, locals }) => {
+		if (locals.session?.user.email?.toLowerCase() !== OWNER_EMAIL) {
+			throw redirect(303, '/login');
+		}
+		const formData = await request.formData();
+		const email = String(formData.get('email') || '').trim().toLowerCase();
+		if (!email) {
+			return fail(400, { message: 'Email requerido' });
+		}
+		const { data: trainer } = await supabaseAdmin.from('trainers').select('id').eq('email', email).maybeSingle();
+		if (trainer?.id) {
+			await supabaseAdmin.auth.admin.signOut({ user_id: trainer.id });
+		}
+		return { success: true };
 	},
 	delete: async ({ request, locals }) => {
 		if (!locals.session) {

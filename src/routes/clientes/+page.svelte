@@ -5,6 +5,8 @@
 
 	let { data, form } = $props();
 	let clients = (data?.clients ?? []) as ClientSummary[];
+	let trainerAdmin = data?.trainerAdmin ?? null;
+	let isOwner = data?.isOwner ?? false;
 	const SITE_URL = (data?.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	let deleteTarget = $state<ClientSummary | null>(null);
 	let deleteConfirm = $state('');
@@ -58,6 +60,107 @@
 			</button>
 		</form>
 	</div>
+
+	{#if isOwner}
+		<section class="rounded-xl border border-emerald-900/40 bg-[#0f111b] p-6 shadow-lg shadow-black/30 text-slate-100 space-y-4">
+			<div class="flex flex-wrap items-center justify-between gap-3">
+				<div>
+					<p class="text-sm uppercase tracking-wider text-emerald-400">Panel de administrador</p>
+					<h3 class="text-xl font-bold text-slate-50">Habilitar entrenadores</h3>
+				</div>
+				<form method="post" action="?/addTrainer" class="flex flex-wrap items-center gap-3">
+					<input
+						name="email"
+						type="email"
+						placeholder="email@entrenador.com"
+						class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2 text-base text-slate-100 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+						required
+					/>
+					<button
+						type="submit"
+						class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
+					>
+						Habilitar entrenador
+					</button>
+				</form>
+			</div>
+
+			<div class="overflow-x-auto">
+				<table class="min-w-full text-left text-sm text-slate-200">
+					<thead class="border-b border-slate-800 text-slate-400">
+						<tr>
+							<th class="px-3 py-2">Email</th>
+							<th class="px-3 py-2">Estado</th>
+							<th class="px-3 py-2">Acceso</th>
+							<th class="px-3 py-2 text-right">Acciones</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-slate-800">
+						{#if trainerAdmin && trainerAdmin.length > 0}
+							{#each trainerAdmin as trainer}
+								<tr>
+									<td class="px-3 py-2">{trainer.email}</td>
+									<td class="px-3 py-2">
+										<span
+											class={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+												trainer.status === 'active'
+													? 'bg-emerald-900/50 text-emerald-300 border border-emerald-600/40'
+													: 'bg-slate-800 text-slate-300 border border-slate-700'
+											}`}
+										>
+											{trainer.status ?? 'sin sesión'}
+										</span>
+									</td>
+									<td class="px-3 py-2">
+										<span
+											class={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+												trainer.active
+													? 'bg-emerald-900/50 text-emerald-300 border border-emerald-600/40'
+													: 'bg-red-900/40 text-red-200 border border-red-700/50'
+											}`}
+										>
+											{trainer.active ? 'Habilitado' : 'Deshabilitado'}
+										</span>
+									</td>
+									<td class="px-3 py-2">
+										<div class="flex justify-end gap-2">
+											<form method="post" action="?/toggleTrainer">
+												<input type="hidden" name="email" value={trainer.email} />
+												<input type="hidden" name="next_active" value={!trainer.active} />
+												<button
+													class={`rounded-lg px-3 py-2 text-xs font-semibold ${
+														trainer.active
+															? 'border border-red-600 text-red-200 hover:bg-red-900/50'
+															: 'border border-emerald-600 text-emerald-200 hover:bg-emerald-900/40'
+													}`}
+													type="submit"
+												>
+													{trainer.active ? 'Deshabilitar' : 'Habilitar'}
+												</button>
+											</form>
+											<form method="post" action="?/forceSignOut">
+												<input type="hidden" name="email" value={trainer.email} />
+												<button
+													type="submit"
+													class="rounded-lg border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-[#151827]"
+												>
+													Cerrar sesiones
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						{:else}
+							<tr>
+								<td colspan="4" class="px-3 py-3 text-slate-400">No hay entrenadores registrados.</td>
+							</tr>
+						{/if}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{/if}
 
 	<section class="grid gap-6 lg:grid-cols-[2fr,1fr]">
 		<div class="space-y-3">
