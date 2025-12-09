@@ -8,6 +8,10 @@ import { supabaseClient } from '$lib/supabaseClient';
 	let error = '';
 	let loading = false;
 	let showPassword = false;
+	let { data } = $props();
+	if (data?.disabled) {
+		error = 'Acceso inhabilitado por falta de pago. Contactar al administrador para habilitar la cuenta.';
+	}
 
 const login = async () => {
 	loading = true;
@@ -21,11 +25,7 @@ const login = async () => {
 		error = 'No pudimos iniciar sesión. Revisá email y contraseña.';
 		console.error(signInError);
 	} else {
-		if (data.session) {
-			await goto('/clientes');
-		} else {
-			message = 'Revisá tu correo para confirmar la cuenta.';
-		}
+		await goto('/clientes');
 	}
 	loading = false;
 };
