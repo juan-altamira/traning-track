@@ -303,7 +303,7 @@ let deleteConfirmText = $state('');
 				</div>
 				<ul class="mt-3 space-y-3 text-base text-slate-200">
 					{#each WEEK_DAYS as day}
-						{#if plan[day.key]}
+						{#if plan[day.key] && plan[day.key].exercises.length > 0}
 							{@const completion = dayCompletion(day.key)}
 							<li class="flex items-center justify-between rounded-lg border border-slate-800 bg-[#111423] px-4 py-3">
 								<div>
