@@ -82,12 +82,20 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 		(envSite && !envSite.includes('localhost') ? envSite : origin) ||
 		'https://training-track.vercel.app';
 
+	const { data: otherClients } = await supabase
+		.from('clients')
+		.select('id,name')
+		.eq('trainer_id', locals.session.user.id)
+		.neq('id', clientId)
+		.order('name', { ascending: true });
+
 	return {
 		client,
 		plan,
 		progress,
 		last_completed_at: progressRow?.last_completed_at ?? null,
-		siteUrl
+		siteUrl,
+		otherClients: otherClients ?? []
 	};
 };
 
@@ -220,5 +228,76 @@ export const actions: Actions = {
 		await supabase.from('clients').delete().eq('id', params.id);
 
 		throw redirect(303, '/clientes');
+	},
+	copyRoutine: async ({ request, params, locals }) => {
+		if (!locals.session) {
+			throw redirect(303, '/login');
+		}
+
+		const allowed = await ensureTrainerAccess(locals.session.user.email);
+		if (!allowed) {
+			await locals.supabase?.auth.signOut();
+			throw redirect(303, '/login');
+		}
+
+		const formData = await request.formData();
+		const sourceClientId = String(formData.get('source_client_id') || '').trim();
+		const targetClientId = params.id;
+
+		if (!sourceClientId) {
+			return fail(400, { message: 'Seleccioná un cliente origen' });
+		}
+
+		if (sourceClientId === targetClientId) {
+			return fail(400, { message: 'No tiene sentido copiar sobre el mismo cliente' });
+		}
+
+		const supabase = locals.supabase;
+		const { data: clientsPair, error: pairError } = await supabase
+			.from('clients')
+			.select('id,trainer_id')
+			.in('id', [sourceClientId, targetClientId]);
+
+		if (pairError || !clientsPair || clientsPair.length !== 2) {
+			return fail(403, { message: 'No autorizado' });
+		}
+
+		const ownsAll = clientsPair.every((c) => c.trainer_id === locals.session.user.id);
+		if (!ownsAll) {
+			return fail(403, { message: 'No autorizado' });
+		}
+
+		const { data: sourceRoutine, error: sourceError } = await supabase
+			.from('routines')
+			.select('plan')
+			.eq('client_id', sourceClientId)
+			.maybeSingle();
+
+		if (sourceError || !sourceRoutine) {
+			return fail(400, { message: 'No se encontró la rutina origen' });
+		}
+
+		const plan = normalizePlan(sourceRoutine.plan as RoutinePlan | null);
+		const nowUtc = nowIsoUtc();
+
+		const { error: updateError } = await supabase
+			.from('routines')
+			.upsert({ client_id: targetClientId, plan, reset_progress_on_change: true })
+			.eq('client_id', targetClientId);
+
+		if (updateError) {
+			console.error(updateError);
+			return fail(500, { message: 'No pudimos copiar la rutina' });
+		}
+
+		await supabase
+			.from('progress')
+			.update({
+				progress: normalizeProgress(null, { last_reset_utc: nowUtc, last_activity_utc: nowUtc }),
+				last_completed_at: null
+			})
+			.eq('client_id', targetClientId);
+
+		return { success: true };
 	}
 };

@@ -15,7 +15,10 @@ let showDeleteConfirm = $state(false);
 let deleteConfirmText = $state('');
 let showArchiveConfirm = $state(false);
 let linkFeedback = $state('');
+let showCopyModal = $state(false);
+let selectedSource = $state('');
 const MAX_EXERCISES_PER_DAY = 50;
+const otherClients = data.otherClients ?? [];
 
 	const SITE_URL = (data.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	const link = `${SITE_URL}/r/${data.client.client_code}`;
@@ -62,6 +65,22 @@ const MAX_EXERCISES_PER_DAY = 50;
 		await navigator.clipboard.writeText(link);
 		linkFeedback = 'Link copiado';
 		setTimeout(() => (linkFeedback = ''), 2000);
+	};
+
+	const copyRoutine = async () => {
+		if (!selectedSource) return;
+		const formData = new FormData();
+		formData.set('source_client_id', selectedSource);
+		const res = await fetch('?/copyRoutine', { method: 'POST', body: formData });
+		if (res.ok) {
+			statusMessage = 'Rutina copiada correctamente';
+			showCopyModal = false;
+			setTimeout(() => (statusMessage = ''), 2500);
+			location.reload();
+		} else {
+			const msg = await res.text();
+			statusMessage = msg || 'No pudimos copiar la rutina';
+		}
 	};
 
 	const saveRoutine = async () => {
@@ -126,6 +145,16 @@ const MAX_EXERCISES_PER_DAY = 50;
 				on:click={copyLink}
 			>
 				Copiar link público
+			</button>
+			<button
+				class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2.5 text-base text-slate-100 hover:bg-[#1b1f30]"
+				type="button"
+				on:click={() => {
+					selectedSource = '';
+					showCopyModal = true;
+				}}
+			>
+				Copiar rutina desde otro cliente
 			</button>
 			{#if clientStatus === 'active'}
 				<button
@@ -420,6 +449,55 @@ const MAX_EXERCISES_PER_DAY = 50;
 							showArchiveConfirm = false;
 							setStatus('archived');
 						}}
+					>
+						Confirmar
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	{#if showCopyModal}
+		<div class="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-sm px-4">
+			<div class="w-full max-w-md rounded-2xl border border-slate-800 bg-[#0f111b] p-6 shadow-2xl shadow-black/40 text-slate-100 space-y-4">
+				<div class="space-y-2">
+					<h2 class="text-xl font-semibold text-slate-100">Copiar rutina desde otro cliente</h2>
+					<p class="text-sm text-slate-300">
+						Esto reemplaza por completo la rutina actual de este cliente.
+					</p>
+				</div>
+				{#if otherClients.length > 0}
+					<label class="block text-sm font-medium text-slate-200">
+						Seleccioná cliente origen
+						<select
+							class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+							bind:value={selectedSource}
+						>
+							<option value="">Elegí un cliente</option>
+							{#each otherClients as c}
+								<option value={c.id}>{c.name}</option>
+							{/each}
+						</select>
+					</label>
+				{:else}
+					<p class="text-sm text-slate-400">No tenés otros clientes para copiar.</p>
+				{/if}
+				<div class="flex justify-end gap-3">
+					<button
+						type="button"
+						class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2 text-slate-200 hover:bg-[#1b1f30]"
+						on:click={() => {
+							showCopyModal = false;
+							selectedSource = '';
+						}}
+					>
+						Cancelar
+					</button>
+					<button
+						type="button"
+						class="rounded-lg bg-emerald-600 px-4 py-2 text-white disabled:opacity-60 disabled:cursor-not-allowed"
+						disabled={!selectedSource}
+						on:click={copyRoutine}
 					>
 						Confirmar
 					</button>
