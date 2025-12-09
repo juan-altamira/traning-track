@@ -271,13 +271,22 @@ let deleteConfirmText = $state('');
 					{/each}
 				{/if}
 
-				<button
-					class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2.5 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
-					on:click={() => addExercise(selectedDay)}
-					type="button"
-				>
-					+ Agregar ejercicio
-				</button>
+				<div class="flex flex-wrap gap-3">
+					<button
+						class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2.5 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
+						on:click={() => addExercise(selectedDay)}
+						type="button"
+					>
+						+ Agregar ejercicio
+					</button>
+					<button
+						class="save-cta rounded-lg bg-[#1c2338] px-4 py-2.5 text-base font-medium text-slate-100 hover:bg-[#222b43] disabled:cursor-not-allowed disabled:opacity-70"
+						on:click={saveRoutine}
+						disabled={saving}
+					>
+						<span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
+					</button>
+				</div>
 			</div>
 
 			{#if feedback}
