@@ -330,7 +330,7 @@ let isOwner = data?.isOwner ?? false;
 </section>
 
 {#if copyToast}
-	<div class="fixed bottom-6 right-6 z-40 rounded-lg border border-emerald-700/40 bg-emerald-900/70 px-4 py-3 text-sm font-semibold text-emerald-100 shadow-lg shadow-black/40">
+	<div class="fixed top-6 right-6 z-40 rounded-lg border border-emerald-700/40 bg-emerald-900/70 px-4 py-3 text-sm font-semibold text-emerald-100 shadow-lg shadow-black/40">
 		{copyToast}
 	</div>
 {/if}
