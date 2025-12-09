@@ -12,6 +12,7 @@ let feedback = $state('');
 let statusMessage = $state('');
 let showDeleteConfirm = $state(false);
 let deleteConfirmText = $state('');
+let showArchiveConfirm = $state(false);
 
 	const SITE_URL = (data.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	const link = `${SITE_URL}/r/${data.client.client_code}`;
@@ -122,15 +123,15 @@ let deleteConfirmText = $state('');
 			</button>
 			{#if data.client.status === 'active'}
 				<button
-					class="rounded-lg border border-amber-500/50 bg-amber-900/40 px-4 py-2.5 text-base text-amber-200 hover:bg-amber-900/60"
+					class="rounded-lg border border-amber-500/50 bg-amber-900/40 px-4 py-2.5 text-base text-amber-200 hover:bg-amber-900/60 mt-2 md:mt-0"
 					type="button"
-					on:click={() => setStatus('archived')}
+					on:click={() => (showArchiveConfirm = true)}
 				>
 					Archivar (cliente verá acceso desactivado)
 				</button>
 			{:else}
 				<button
-					class="rounded-lg border border-emerald-500/50 bg-emerald-900/40 px-4 py-2.5 text-base text-emerald-200 hover:bg-emerald-900/60"
+					class="rounded-lg border border-emerald-500/50 bg-emerald-900/40 px-4 py-2.5 text-base text-emerald-200 hover:bg-emerald-900/60 mt-2 md:mt-0"
 					type="button"
 					on:click={() => setStatus('active')}
 				>
@@ -138,7 +139,7 @@ let deleteConfirmText = $state('');
 				</button>
 			{/if}
 			<button
-				class="rounded-lg border border-red-700 bg-red-900/50 px-4 py-2.5 text-base text-red-100 hover:bg-red-900/70"
+				class="rounded-lg border border-red-700 bg-red-900/50 px-4 py-2.5 text-base text-red-100 hover:bg-red-900/70 mt-2 md:mt-0"
 				type="button"
 				on:click={() => {
 					showDeleteConfirm = true;
@@ -383,6 +384,36 @@ let deleteConfirmText = $state('');
 						</button>
 					</div>
 				</form>
+			</div>
+		</div>
+	{/if}
+
+	{#if showArchiveConfirm}
+		<div class="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-sm px-4">
+			<div class="w-full max-w-md rounded-2xl border border-slate-800 bg-[#0f111b] p-6 shadow-2xl shadow-black/40 text-slate-100">
+				<div class="space-y-3">
+					<h2 class="text-xl font-semibold text-amber-200">Archivar cliente</h2>
+					<p class="text-sm text-slate-300">¿Estás seguro que deseas archivar a este cliente?</p>
+				</div>
+				<div class="mt-5 flex items-center justify-end gap-3">
+					<button
+						type="button"
+						class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2 text-slate-200 hover:bg-[#1b1f30]"
+						on:click={() => (showArchiveConfirm = false)}
+					>
+						Cancelar
+					</button>
+					<button
+						type="button"
+						class="rounded-lg border border-amber-500/50 bg-amber-900/60 px-4 py-2 text-amber-100 hover:bg-amber-900/80"
+						on:click={() => {
+							showArchiveConfirm = false;
+							setStatus('archived');
+						}}
+					>
+						Confirmar
+					</button>
+				</div>
 			</div>
 		</div>
 	{/if}
