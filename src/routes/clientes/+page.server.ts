@@ -7,6 +7,7 @@ import { env } from '$env/dynamic/public';
 import { supabaseAdmin } from '$lib/server/supabaseAdmin';
 
 const OWNER_EMAIL = 'juanpabloaltamira@protonmail.com';
+const MAX_CLIENTS_PER_TRAINER = 100;
 
 const ensureTrainerAccess = async (rawEmail: string | null | undefined) => {
 	const email = rawEmail?.toLowerCase();
@@ -197,6 +198,24 @@ export const actions: Actions = {
 		}
 
 		const supabase = locals.supabase;
+
+		const { count: activeCount, error: countError } = await supabase
+			.from('clients')
+			.select('id', { count: 'exact', head: true })
+			.eq('trainer_id', locals.session.user.id)
+			.eq('status', 'active');
+
+		if (countError) {
+			console.error(countError);
+			return fail(500, { message: 'No pudimos validar el límite de clientes' });
+		}
+
+		if ((activeCount ?? 0) >= MAX_CLIENTS_PER_TRAINER) {
+			return fail(400, {
+				message: 'Límite de 100 clientes alcanzado. Eliminá o archivá uno para crear otro.'
+			});
+		}
+
 		const { data: client, error } = await supabase
 			.from('clients')
 			.insert({

@@ -7,6 +7,7 @@ import { env } from '$env/dynamic/public';
 import { supabaseAdmin } from '$lib/server/supabaseAdmin';
 
 const OWNER_EMAIL = 'juanpabloaltamira@protonmail.com';
+const MAX_EXERCISES_PER_DAY = 50;
 
 const ensureTrainerAccess = async (rawEmail: string | null | undefined) => {
 	const email = rawEmail?.toLowerCase();
@@ -114,6 +115,14 @@ export const actions: Actions = {
 		}
 
 		const plan = normalizePlan(parsed);
+		for (const day of Object.values(plan)) {
+			if (day.exercises.length > MAX_EXERCISES_PER_DAY) {
+				return fail(400, {
+					message: 'Límite de 50 ejercicios por día alcanzado para este cliente.'
+				});
+			}
+		}
+
 		const supabase = locals.supabase;
 		const nowUtc = nowIsoUtc();
 

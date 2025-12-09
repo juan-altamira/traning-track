@@ -15,6 +15,7 @@ let showDeleteConfirm = $state(false);
 let deleteConfirmText = $state('');
 let showArchiveConfirm = $state(false);
 let linkFeedback = $state('');
+const MAX_EXERCISES_PER_DAY = 50;
 
 	const SITE_URL = (data.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	const link = `${SITE_URL}/r/${data.client.client_code}`;
@@ -27,6 +28,11 @@ let linkFeedback = $state('');
 
 	const addExercise = (dayKey: string) => {
 		const exercises = plan[dayKey].exercises;
+		if (exercises.length >= MAX_EXERCISES_PER_DAY) {
+			feedback = 'Límite de 50 ejercicios para este día.';
+			setTimeout(() => (feedback = ''), 2500);
+			return;
+		}
 		const newExercise: RoutineExercise = {
 			id: crypto.randomUUID(),
 			name: '',
@@ -285,6 +291,7 @@ let linkFeedback = $state('');
 						class="rounded-lg border border-slate-700 bg-[#151827] px-4 py-2.5 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
 						on:click={() => addExercise(selectedDay)}
 						type="button"
+						disabled={plan[selectedDay].exercises.length >= MAX_EXERCISES_PER_DAY}
 					>
 						+ Agregar ejercicio
 					</button>
