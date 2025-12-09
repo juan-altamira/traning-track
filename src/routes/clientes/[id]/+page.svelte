@@ -141,14 +141,14 @@ const otherClients = data.otherClients ?? [];
 		<div class="flex w-full flex-col gap-4">
 			<div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 justify-between">
 				<button
-					class="w-full md:w-auto rounded-lg border border-slate-700 bg-[#151827] px-4 py-2.5 text-base text-slate-100 hover:bg-[#1b1f30]"
+					class="w-full md:w-1/2 rounded-lg border border-slate-700 bg-[#151827] px-5 py-3 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
 					type="button"
 					on:click={copyLink}
 				>
 					Copiar link público
 				</button>
 				<button
-					class="w-full md:w-auto rounded-lg border border-slate-700 bg-[#151827] px-4 py-2.5 text-base text-slate-100 hover:bg-[#1b1f30]"
+					class="w-full md:w-1/2 rounded-lg border border-slate-700 bg-[#151827] px-5 py-3 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
 					type="button"
 					on:click={() => {
 						selectedSource = '';
@@ -161,7 +161,7 @@ const otherClients = data.otherClients ?? [];
 			<div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 justify-between">
 				{#if clientStatus === 'active'}
 					<button
-						class="w-full md:w-auto rounded-lg border border-amber-500/50 bg-amber-900/40 px-4 py-2.5 text-base text-amber-200 hover:bg-amber-900/60"
+						class="w-full md:w-1/2 rounded-lg border border-amber-500/50 bg-amber-900/40 px-5 py-3 text-base font-medium text-amber-200 hover:bg-amber-900/60"
 						type="button"
 						on:click={() => (showArchiveConfirm = true)}
 					>
@@ -169,7 +169,7 @@ const otherClients = data.otherClients ?? [];
 					</button>
 				{:else}
 					<button
-						class="w-full md:w-auto rounded-lg border border-emerald-500/50 bg-emerald-900/40 px-4 py-2.5 text-base text-emerald-200 hover:bg-emerald-900/60"
+						class="w-full md:w-1/2 rounded-lg border border-emerald-500/50 bg-emerald-900/40 px-5 py-3 text-base font-medium text-emerald-200 hover:bg-emerald-900/60"
 						type="button"
 						on:click={() => setStatus('active')}
 					>
@@ -177,7 +177,7 @@ const otherClients = data.otherClients ?? [];
 					</button>
 				{/if}
 				<button
-					class="w-full md:w-auto rounded-lg border border-red-700 bg-red-900/50 px-4 py-2.5 text-base text-red-100 hover:bg-red-900/70"
+					class="w-full md:w-1/2 rounded-lg border border-red-700 bg-red-900/50 px-5 py-3 text-base font-medium text-red-100 hover:bg-red-900/70"
 					type="button"
 					on:click={() => {
 						showDeleteConfirm = true;
@@ -471,16 +471,14 @@ const otherClients = data.otherClients ?? [];
 						</span>
 					</h2>
 					<p class="text-sm text-amber-200 flex items-center justify-center gap-2">
-						<span aria-hidden="true">⚠️</span>
-						Esto reemplaza la rutina actual. El progreso se reiniciará para este cliente.
-						<span aria-hidden="true">⚠️</span>
+						Esto reemplaza la rutina actual. ⚠️ El progreso se reiniciará para este cliente. ⚠️
 					</p>
 				</div>
 				{#if otherClients.length > 0}
 					<label class="block text-sm font-medium text-slate-200">
 						Seleccioná cliente origen
 						<select
-							class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+							class="mt-2 w-full rounded-xl border border-slate-600 bg-[#0f1322] px-4 py-3 text-base text-slate-100 shadow-inner focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-600"
 							bind:value={selectedSource}
 						>
 							<option value="">Elegí un cliente</option>
