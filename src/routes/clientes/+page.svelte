@@ -11,11 +11,13 @@ let isOwner = data?.isOwner ?? false;
 	const SITE_URL = (data?.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	let deleteTarget = $state<ClientSummary | null>(null);
 	let deleteConfirm = $state('');
+	let copyToast = $state('');
 
 	const copyLink = async (client: ClientSummary) => {
 		const link = `${SITE_URL}/r/${client.client_code}`;
 		await navigator.clipboard.writeText(link);
-		alert('Link copiado');
+		copyToast = 'Link público copiado';
+		setTimeout(() => (copyToast = ''), 2000);
 	};
 
 	const humanDate = (iso?: string | null) => {
@@ -326,3 +328,9 @@ let isOwner = data?.isOwner ?? false;
 		</div>
 	{/if}
 </section>
+
+{#if copyToast}
+	<div class="fixed bottom-6 right-6 z-40 rounded-lg border border-emerald-700/40 bg-emerald-900/70 px-4 py-3 text-sm font-semibold text-emerald-100 shadow-lg shadow-black/40">
+		{copyToast}
+	</div>
+{/if}

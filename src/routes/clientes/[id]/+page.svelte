@@ -10,9 +10,11 @@ let selectedDay = $state(WEEK_DAYS[0].key);
 let saving = $state(false);
 let feedback = $state('');
 let statusMessage = $state('');
+let clientStatus = $state(data.client.status as 'active' | 'archived');
 let showDeleteConfirm = $state(false);
 let deleteConfirmText = $state('');
 let showArchiveConfirm = $state(false);
+let linkFeedback = $state('');
 
 	const SITE_URL = (data.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	const link = `${SITE_URL}/r/${data.client.client_code}`;
@@ -52,8 +54,8 @@ let showArchiveConfirm = $state(false);
 
 	const copyLink = async () => {
 		await navigator.clipboard.writeText(link);
-		feedback = 'Link copiado';
-		setTimeout(() => (feedback = ''), 2000);
+		linkFeedback = 'Link copiado';
+		setTimeout(() => (linkFeedback = ''), 2000);
 	};
 
 	const saveRoutine = async () => {
@@ -87,7 +89,7 @@ let showArchiveConfirm = $state(false);
 		formData.set('status', status);
 		const res = await fetch('?/setStatus', { method: 'POST', body: formData });
 		if (res.ok) {
-			data.client.status = status;
+			clientStatus = status;
 			statusMessage = status === 'active' ? 'Cliente reactivado' : 'Cliente archivado (verá acceso desactivado)';
 			setTimeout(() => (statusMessage = ''), 2500);
 		}
@@ -121,7 +123,7 @@ let showArchiveConfirm = $state(false);
 			>
 				Copiar link público
 			</button>
-			{#if data.client.status === 'active'}
+			{#if clientStatus === 'active'}
 				<button
 					class="rounded-lg border border-amber-500/50 bg-amber-900/40 px-4 py-2.5 text-base text-amber-200 hover:bg-amber-900/60 mt-2 md:mt-0"
 					type="button"
@@ -163,6 +165,12 @@ let showArchiveConfirm = $state(false);
 
 	{#if statusMessage}
 		<p class="rounded-lg bg-[#151827] px-3 py-2 text-sm text-emerald-200 border border-emerald-700/40">{statusMessage}</p>
+	{/if}
+
+	{#if linkFeedback}
+		<div class="fixed bottom-6 right-6 z-40 rounded-lg border border-emerald-700/40 bg-emerald-900/70 px-4 py-3 text-sm font-semibold text-emerald-100 shadow-lg shadow-black/40">
+			{linkFeedback}
+		</div>
 	{/if}
 
 	<section class="grid gap-6 lg:grid-cols-[2fr,1fr]">
