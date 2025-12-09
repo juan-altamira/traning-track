@@ -185,6 +185,6 @@ export const actions: Actions = {
 		await supabase.from('routines').delete().eq('client_id', clientId);
 		await supabase.from('clients').delete().eq('id', clientId);
 
-		return { success: true };
+		throw redirect(303, '/clientes');
 	}
 };

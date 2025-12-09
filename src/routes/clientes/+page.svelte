@@ -84,31 +84,22 @@
 							</div>
 							<div class="text-base text-slate-300">
 								<p>
-									Semana actual:
-									<span class="font-medium">
-										{client.week_started ? 'Iniciada' : 'No iniciada'}
-									</span>
-								</p>
-								<p>
 									Última actividad:
 									<span class={`font-semibold ${activityColor(client.days_since_activity)}`}>
 										{activityLabel(client.days_since_activity)}
 									</span>
 								</p>
-								<p class="text-sm text-slate-500">
-									Último día completado: {client.last_day_completed ?? '—'} · {humanDate(client.last_completed_at)}
-								</p>
 							</div>
 							<div class="mt-auto space-y-3">
 								<button
-									class="w-full rounded-lg bg-[#1c2338] px-4 py-3.5 text-lg font-semibold text-slate-100 hover:bg-[#222b43]"
+									class="w-full rounded-xl bg-emerald-600 px-4 py-3.5 text-lg font-semibold text-white hover:bg-emerald-500 shadow-sm"
 									on:click={() => goto(`/clientes/${client.id}`)}
 								>
 									Abrir rutina del cliente
 								</button>
 								<div class="grid grid-cols-2 gap-3">
 									<button
-										class="rounded-lg border border-red-600 bg-red-900/40 px-4 py-2.5 text-base text-red-100 hover:bg-red-900/60"
+										class="rounded-xl border border-red-600 bg-red-900/40 px-4 py-3.5 text-base text-red-100 hover:bg-red-900/60"
 										type="button"
 										on:click={() => {
 											deleteTarget = client;
@@ -118,7 +109,7 @@
 										Eliminar cliente
 									</button>
 									<button
-										class="rounded-lg border border-slate-700 px-4 py-2.5 text-base text-slate-100 hover:bg-[#151827]"
+										class="rounded-xl border border-slate-700 px-4 py-3.5 text-base text-slate-100 hover:bg-[#151827]"
 										on:click={() => copyLink(client)}
 										type="button"
 									>
