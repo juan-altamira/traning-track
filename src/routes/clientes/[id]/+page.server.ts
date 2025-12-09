@@ -27,7 +27,8 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 
 	const allowed = await ensureTrainerAccess(locals.session.user.email);
 	if (!allowed) {
-		throw redirect(303, '/login?disabled=1');
+		await locals.supabase?.auth.signOut();
+		throw redirect(303, '/login');
 	}
 
 	const supabase = locals.supabase;
@@ -97,7 +98,8 @@ export const actions: Actions = {
 
 		const allowed = await ensureTrainerAccess(locals.session.user.email);
 		if (!allowed) {
-			throw redirect(303, '/login?disabled=1');
+			await locals.supabase?.auth.signOut();
+			throw redirect(303, '/login');
 		}
 
 		const formData = await request.formData();
@@ -146,7 +148,8 @@ export const actions: Actions = {
 
 		const allowed = await ensureTrainerAccess(locals.session.user.email);
 		if (!allowed) {
-			throw redirect(303, '/login?disabled=1');
+			await locals.supabase?.auth.signOut();
+			throw redirect(303, '/login');
 		}
 
 		const nowUtc = nowIsoUtc();
@@ -167,7 +170,8 @@ export const actions: Actions = {
 
 		const allowed = await ensureTrainerAccess(locals.session.user.email);
 		if (!allowed) {
-			throw redirect(303, '/login?disabled=1');
+			await locals.supabase?.auth.signOut();
+			throw redirect(303, '/login');
 		}
 		const formData = await request.formData();
 		const status = String(formData.get('status') || 'active');

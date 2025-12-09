@@ -8,23 +8,38 @@ import { supabaseClient } from '$lib/supabaseClient';
 	let error = '';
 	let loading = false;
 	let showPassword = false;
-	let { data } = $props();
-	if (data?.disabled) {
-		error = 'Acceso inhabilitado por falta de pago. Contactar al administrador para habilitar la cuenta.';
-	}
+	const OWNER_EMAIL = 'juanpabloaltamira@protonmail.com';
 
 const login = async () => {
 	loading = true;
 	error = '';
 	message = '';
+	const emailLower = email.trim().toLowerCase();
 	const { data, error: signInError } = await supabaseClient.auth.signInWithPassword({
-		email: email.trim(),
+		email: emailLower,
 		password: password
 	});
 	if (signInError) {
 		error = 'No pudimos iniciar sesión. Revisá email y contraseña.';
 		console.error(signInError);
 	} else {
+		// Chequeo rápido de habilitación: owner siempre habilitado, resto depende de trainer_access
+		if (emailLower !== OWNER_EMAIL) {
+			const { data: accessRow } = await supabaseClient
+				.from('trainer_access')
+				.select('active')
+				.eq('email', emailLower)
+				.maybeSingle();
+
+			if (!accessRow?.active) {
+				error =
+					'Acceso inhabilitado por falta de pago. Contactar al administrador para habilitar la cuenta.';
+				await supabaseClient.auth.signOut();
+				loading = false;
+				return;
+			}
+		}
+
 		await goto('/clientes');
 	}
 	loading = false;

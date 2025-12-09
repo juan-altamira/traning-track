@@ -89,7 +89,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const allowed = await ensureTrainerAccess(locals.session.user.email);
 	if (!allowed) {
-		throw redirect(303, '/login?disabled=1');
+		await locals.supabase?.auth.signOut();
+		throw redirect(303, '/login');
 	}
 
 	await ensureTrainerExists(locals.supabase, locals.session.user.id, locals.session.user.email ?? '');
@@ -181,7 +182,8 @@ export const actions: Actions = {
 
 		const allowed = await ensureTrainerAccess(locals.session.user.email);
 		if (!allowed) {
-			throw redirect(303, '/login?disabled=1');
+			await locals.supabase?.auth.signOut();
+			throw redirect(303, '/login');
 		}
 
 		await ensureTrainerExists(locals.supabase, locals.session.user.id, locals.session.user.email ?? '');
