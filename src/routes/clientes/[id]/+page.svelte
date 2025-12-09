@@ -179,7 +179,7 @@ const MAX_EXERCISES_PER_DAY = 50;
 
 	<section class="grid gap-6 lg:grid-cols-[2fr,1fr]">
 		<div class="space-y-5 rounded-2xl border border-slate-800 bg-[#0f111b] p-6 shadow-lg shadow-black/30">
-			<div class="flex flex-col items-center justify-between gap-2">
+			<div class="flex items-center justify-between">
 				<h2 class="text-3xl font-extrabold uppercase tracking-wide text-slate-50">Rutina</h2>
 				<button
 					class="save-cta rounded-lg bg-[#1c2338] px-4 py-2.5 text-base font-medium text-slate-100 hover:bg-[#222b43] disabled:cursor-not-allowed disabled:opacity-70"
