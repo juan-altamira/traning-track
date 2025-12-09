@@ -45,7 +45,9 @@
 <section class="flex flex-col gap-8 text-slate-100">
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div>
-			<p class="text-2xl font-semibold tracking-wide text-slate-100">en este panel verás a tus clientes</p>
+			<p class="text-2xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-slate-100">
+				En este panel verás a tus clientes
+			</p>
 		</div>
 		<form method="POST" action="/logout">
 			<button
@@ -130,7 +132,9 @@
 			class="space-y-5 rounded-xl border border-slate-800 bg-[#0f111b] p-7 shadow-lg shadow-black/30"
 		>
 			<div class="space-y-2">
-				<h2 class="text-2xl font-semibold text-slate-50 tracking-tight">crear cliente</h2>
+				<h2 class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-slate-50">
+					Crear cliente
+				</h2>
 			</div>
 
 			<label class="block text-base font-medium text-slate-200">
