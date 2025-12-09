@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
-	import type { ClientSummary } from '$lib/types';
-	import { goto } from '$app/navigation';
+import type { ClientSummary } from '$lib/types';
+import { goto } from '$app/navigation';
 
-	let { data, form } = $props();
-	let clients = (data?.clients ?? []) as ClientSummary[];
-	let trainerAdmin = data?.trainerAdmin ?? null;
-	let isOwner = data?.isOwner ?? false;
+let { data, form } = $props();
+const OWNER_EMAIL = 'juanpabloaltamira@protonmail.com';
+let clients = (data?.clients ?? []) as ClientSummary[];
+let trainerAdmin = data?.trainerAdmin ?? null;
+let isOwner = data?.isOwner ?? false;
 	const SITE_URL = (data?.siteUrl ?? 'https://training-track.vercel.app').replace(/\/?$/, '');
 	let deleteTarget = $state<ClientSummary | null>(null);
 	let deleteConfirm = $state('');
@@ -98,58 +99,60 @@
 					<tbody class="divide-y divide-slate-800">
 						{#if trainerAdmin && trainerAdmin.length > 0}
 							{#each trainerAdmin as trainer}
-								<tr>
-									<td class="px-3 py-2">{trainer.email}</td>
-									<td class="px-3 py-2">
-										<span
-											class={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-												trainer.status === 'active'
-													? 'bg-emerald-900/50 text-emerald-300 border border-emerald-600/40'
-													: 'bg-slate-800 text-slate-300 border border-slate-700'
-											}`}
-										>
-											{trainer.status ?? 'sin sesión'}
-										</span>
-									</td>
-									<td class="px-3 py-2">
-										<span
-											class={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-												trainer.active
-													? 'bg-emerald-900/50 text-emerald-300 border border-emerald-600/40'
-													: 'bg-red-900/40 text-red-200 border border-red-700/50'
-											}`}
-										>
-											{trainer.active ? 'Habilitado' : 'Deshabilitado'}
-										</span>
-									</td>
-									<td class="px-3 py-2">
-										<div class="flex justify-end gap-2">
-											<form method="post" action="?/toggleTrainer">
-												<input type="hidden" name="email" value={trainer.email} />
-												<input type="hidden" name="next_active" value={!trainer.active} />
-												<button
-													class={`rounded-lg px-3 py-2 text-xs font-semibold ${
-														trainer.active
-															? 'border border-red-600 text-red-200 hover:bg-red-900/50'
-															: 'border border-emerald-600 text-emerald-200 hover:bg-emerald-900/40'
-													}`}
-													type="submit"
-												>
-													{trainer.active ? 'Deshabilitar' : 'Habilitar'}
-												</button>
-											</form>
-											<form method="post" action="?/forceSignOut">
-												<input type="hidden" name="email" value={trainer.email} />
-												<button
-													type="submit"
-													class="rounded-lg border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-[#151827]"
-												>
-													Cerrar sesiones
-												</button>
-											</form>
-										</div>
-									</td>
-								</tr>
+								{#if trainer.email?.toLowerCase() !== OWNER_EMAIL}
+									<tr>
+										<td class="px-3 py-2">{trainer.email}</td>
+										<td class="px-3 py-2">
+											<span
+												class={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+													trainer.status === 'active'
+														? 'bg-emerald-900/50 text-emerald-300 border border-emerald-600/40'
+														: 'bg-slate-800 text-slate-300 border border-slate-700'
+												}`}
+											>
+												{trainer.status ?? 'sin sesión'}
+											</span>
+										</td>
+										<td class="px-3 py-2">
+											<span
+												class={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+													trainer.active
+														? 'bg-emerald-900/50 text-emerald-300 border border-emerald-600/40'
+														: 'bg-red-900/40 text-red-200 border border-red-700/50'
+												}`}
+											>
+												{trainer.active ? 'Habilitado' : 'Deshabilitado'}
+											</span>
+										</td>
+										<td class="px-3 py-2">
+											<div class="flex justify-end gap-2">
+												<form method="post" action="?/toggleTrainer">
+													<input type="hidden" name="email" value={trainer.email} />
+													<input type="hidden" name="next_active" value={!trainer.active} />
+													<button
+														class={`rounded-lg px-3 py-2 text-xs font-semibold ${
+															trainer.active
+																? 'border border-red-600 text-red-200 hover:bg-red-900/50'
+																: 'border border-emerald-600 text-emerald-200 hover:bg-emerald-900/40'
+														}`}
+														type="submit"
+													>
+														{trainer.active ? 'Deshabilitar' : 'Habilitar'}
+													</button>
+												</form>
+												<form method="post" action="?/forceSignOut">
+													<input type="hidden" name="email" value={trainer.email} />
+													<button
+														type="submit"
+														class="rounded-lg border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-[#151827]"
+													>
+														Cerrar sesiones
+													</button>
+												</form>
+											</div>
+										</td>
+									</tr>
+								{/if}
 							{/each}
 						{:else}
 							<tr>

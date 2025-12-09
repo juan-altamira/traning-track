@@ -59,7 +59,7 @@ const fetchTrainerAdminData = async () => {
 	>();
 
 	accessRows?.forEach((row) => {
-		if (!row.email) return;
+		if (!row.email || row.email.toLowerCase() === OWNER_EMAIL) return;
 		byEmail.set(row.email.toLowerCase(), {
 			email: row.email,
 			active: row.active === true,
@@ -68,7 +68,7 @@ const fetchTrainerAdminData = async () => {
 	});
 
 	trainerRows?.forEach((row) => {
-		if (!row.email) return;
+		if (!row.email || row.email.toLowerCase() === OWNER_EMAIL) return;
 		const key = row.email.toLowerCase();
 		const current = byEmail.get(key) ?? { email: row.email, active: false };
 		byEmail.set(key, {
@@ -241,6 +241,10 @@ export const actions: Actions = {
 			return fail(400, { message: 'Email requerido' });
 		}
 
+		if (email === OWNER_EMAIL) {
+			return { success: true };
+		}
+
 		await supabaseAdmin.from('trainer_access').upsert({ email, active: true });
 		await supabaseAdmin.from('trainers').update({ status: 'active' }).eq('email', email);
 
@@ -257,6 +261,10 @@ export const actions: Actions = {
 
 		if (!email) {
 			return fail(400, { message: 'Email requerido' });
+		}
+
+		if (email === OWNER_EMAIL) {
+			return { success: true };
 		}
 
 		await supabaseAdmin.from('trainer_access').upsert({ email, active: nextActive });
@@ -279,6 +287,9 @@ export const actions: Actions = {
 		const email = String(formData.get('email') || '').trim().toLowerCase();
 		if (!email) {
 			return fail(400, { message: 'Email requerido' });
+		}
+		if (email === OWNER_EMAIL) {
+			return { success: true };
 		}
 		const { data: trainer } = await supabaseAdmin.from('trainers').select('id').eq('email', email).maybeSingle();
 		if (trainer?.id) {
