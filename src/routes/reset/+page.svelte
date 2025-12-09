@@ -108,11 +108,8 @@ onMount(async () => {
 	};
 </script>
 
-<section class="mx-auto max-w-lg space-y-6 text-slate-100">
-	<div class="flex justify-center">
-		<img src="/favicon.png" alt="Training Track logo" class="h-16 w-16 rounded-2xl shadow-lg shadow-emerald-900/30" />
-	</div>
-	<div class="rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30 space-y-6">
+<section class="min-h-screen flex items-center justify-center px-4 text-slate-100">
+	<div class="w-full max-w-lg space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30">
 		<div class="space-y-2 text-center">
 			<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">
 				{mode === 'request' ? 'Restablecer' : 'Nueva contraseña'}
