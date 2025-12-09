@@ -46,7 +46,11 @@ const login = async () => {
 };
 </script>
 
-<section class="mx-auto max-w-lg space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-10 shadow-lg shadow-black/30 text-slate-100">
+<section class="mx-auto max-w-lg space-y-6 text-slate-100">
+	<div class="flex justify-center">
+		<img src="/favicon.png" alt="Training Track logo" class="h-16 w-16 rounded-2xl shadow-lg shadow-emerald-900/30" />
+	</div>
+	<div class="rounded-2xl border border-slate-800 bg-[#0f111b] p-10 shadow-lg shadow-black/30 space-y-6">
 	<div class="space-y-3 text-center">
 		<h1 class="text-3xl font-extrabold text-slate-50 tracking-tight">
 			<span class="bg-gradient-to-r from-emerald-300 via-cyan-300 to-slate-100 bg-clip-text text-transparent">
@@ -112,5 +116,6 @@ const login = async () => {
 		{#if error}
 			<p class="rounded-lg bg-red-900/40 px-4 py-3 text-sm text-red-200 border border-red-700/50">{error}</p>
 		{/if}
+	</div>
 	</div>
 </section>

@@ -50,83 +50,88 @@ const createAccount = async () => {
 };
 </script>
 
-<section class="mx-auto max-w-lg space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30 text-slate-100">
-	<div class="space-y-2 text-center">
-		<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">Registro</p>
-		<h1 class="text-2xl font-semibold text-slate-50">Crear cuenta de entrenador</h1>
-		<p class="text-sm text-slate-400">Ingresá tu email y contraseña. Entrás directo sin confirmar correo.</p>
-		<p class="text-xs text-slate-500">¿Ya tenés cuenta? <a class="text-emerald-300 hover:underline" href="/login">Entrá aquí</a></p>
+<section class="mx-auto max-w-lg space-y-6 text-slate-100">
+	<div class="flex justify-center">
+		<img src="/favicon.png" alt="Training Track logo" class="h-16 w-16 rounded-2xl shadow-lg shadow-emerald-900/30" />
 	</div>
-	<div class="space-y-4">
-		<label class="block text-sm font-medium text-slate-200">
-			Email
-			<input
-				class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
-				placeholder="entrenador@tu-mail.com"
-				type="email"
-				required
-				bind:value={email}
-			/>
-		</label>
-		<label class="block text-sm font-medium text-slate-200">
-			Contraseña
-			<div class="relative mt-1">
+	<div class="rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30 space-y-6">
+		<div class="space-y-2 text-center">
+			<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">Registro</p>
+			<h1 class="text-2xl font-semibold text-slate-50">Crear cuenta de entrenador</h1>
+			<p class="text-sm text-slate-400">Ingresá tu email y contraseña. Entrás directo sin confirmar correo.</p>
+			<p class="text-xs text-slate-500">¿Ya tenés cuenta? <a class="text-emerald-300 hover:underline" href="/login">Entrá aquí</a></p>
+		</div>
+		<div class="space-y-4">
+			<label class="block text-sm font-medium text-slate-200">
+				Email
 				<input
-					class="w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 pr-10 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
-					placeholder="••••••••"
-					type={showPassword ? 'text' : 'password'}
+					class="mt-1 w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+					placeholder="entrenador@tu-mail.com"
+					type="email"
 					required
-					bind:value={password}
+					bind:value={email}
 				/>
-				<button
-					type="button"
-					class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200"
-					on:click={() => (showPassword = !showPassword)}
-					aria-label="Mostrar u ocultar contraseña"
-				>
-					{showPassword ? 'Ocultar' : 'Ver'}
-				</button>
-			</div>
-		</label>
-		<label class="block text-sm font-medium text-slate-200">
-			Confirmar contraseña
-			<div class="relative mt-1">
-				<input
-					class="w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 pr-10 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
-					placeholder="••••••••"
-					type={showConfirm ? 'text' : 'password'}
-					required
-					bind:value={confirmPassword}
-				/>
-				<button
-					type="button"
-					class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200"
-					on:click={() => (showConfirm = !showConfirm)}
-					aria-label="Mostrar u ocultar contraseña"
-				>
-					{showConfirm ? 'Ocultar' : 'Ver'}
-				</button>
-			</div>
-		</label>
-		<button
-			on:click|preventDefault={createAccount}
-			class="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
-			disabled={loading || !email || !password || !confirmPassword}
-		>
-			{#if loading}
-				Creando...
-			{:else}
-				Crear cuenta
+			</label>
+			<label class="block text-sm font-medium text-slate-200">
+				Contraseña
+				<div class="relative mt-1">
+					<input
+						class="w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 pr-10 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+						placeholder="••••••••"
+						type={showPassword ? 'text' : 'password'}
+						required
+						bind:value={password}
+					/>
+					<button
+						type="button"
+						class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200"
+						on:click={() => (showPassword = !showPassword)}
+						aria-label="Mostrar u ocultar contraseña"
+					>
+						{showPassword ? 'Ocultar' : 'Ver'}
+					</button>
+				</div>
+			</label>
+			<label class="block text-sm font-medium text-slate-200">
+				Confirmar contraseña
+				<div class="relative mt-1">
+					<input
+						class="w-full rounded-lg border border-slate-700 bg-[#151827] px-3 py-2 pr-10 text-base text-slate-100 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-700"
+						placeholder="••••••••"
+						type={showConfirm ? 'text' : 'password'}
+						required
+						bind:value={confirmPassword}
+					/>
+					<button
+						type="button"
+						class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200"
+						on:click={() => (showConfirm = !showConfirm)}
+						aria-label="Mostrar u ocultar contraseña"
+					>
+						{showConfirm ? 'Ocultar' : 'Ver'}
+					</button>
+				</div>
+			</label>
+			<button
+				on:click|preventDefault={createAccount}
+				class="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
+				disabled={loading || !email || !password || !confirmPassword}
+			>
+				{#if loading}
+					Creando...
+				{:else}
+					Crear cuenta
+				{/if}
+			</button>
+			{#if message}
+				<p class="rounded-lg bg-emerald-900/40 px-3 py-2 text-sm text-emerald-200 border border-emerald-700/50">{message}</p>
 			{/if}
-		</button>
-		{#if message}
-			<p class="rounded-lg bg-emerald-900/40 px-3 py-2 text-sm text-emerald-200 border border-emerald-700/50">{message}</p>
-		{/if}
-		{#if error}
-			<p class="rounded-lg bg-red-900/40 px-3 py-2 text-sm text-red-200 border border-red-700/50">{error}</p>
-		{/if}
+			{#if error}
+				<p class="rounded-lg bg-red-900/40 px-3 py-2 text-sm text-red-200 border border-red-700/50">{error}</p>
+			{/if}
+		</div>
+		<p class="text-xs text-slate-500 text-center">
+			Accedés con email y contraseña. No se requiere confirmación por correo.
+		</p>
 	</div>
-	<p class="text-xs text-slate-500 text-center">
-		Accedés con email y contraseña. No se requiere confirmación por correo.
-	</p>
 </section>
