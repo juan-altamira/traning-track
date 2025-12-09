@@ -46,8 +46,8 @@ const login = async () => {
 };
 </script>
 
-<section class="min-h-screen flex items-center justify-center px-4 text-slate-100">
-	<div class="w-full max-w-lg space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-10 shadow-lg shadow-black/30">
+<section class="mx-auto max-w-lg space-y-6 text-slate-100">
+	<div class="rounded-2xl border border-slate-800 bg-[#0f111b] p-10 shadow-lg shadow-black/30">
 	<div class="space-y-3 text-center">
 		<h1 class="text-3xl font-extrabold text-slate-50 tracking-tight">
 			<span class="bg-gradient-to-r from-emerald-300 via-cyan-300 to-slate-100 bg-clip-text text-transparent">

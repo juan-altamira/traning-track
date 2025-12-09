@@ -108,8 +108,8 @@ onMount(async () => {
 	};
 </script>
 
-<section class="min-h-screen flex items-center justify-center px-4 text-slate-100">
-	<div class="w-full max-w-lg space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30">
+<section class="mx-auto max-w-lg space-y-6 text-slate-100">
+	<div class="w-full space-y-6 rounded-2xl border border-slate-800 bg-[#0f111b] p-8 shadow-lg shadow-black/30">
 		<div class="space-y-2 text-center">
 			<p class="text-sm font-semibold uppercase tracking-wide text-slate-400">
 				{mode === 'request' ? 'Restablecer' : 'Nueva contraseña'}
