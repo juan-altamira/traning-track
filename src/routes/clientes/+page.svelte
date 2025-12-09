@@ -101,7 +101,7 @@
 							</div>
 							<div class="mt-auto space-y-3">
 								<button
-									class="w-full rounded-lg bg-[#1c2338] px-4 py-2.5 text-base font-medium text-slate-100 hover:bg-[#222b43]"
+									class="w-full rounded-lg bg-[#1c2338] px-4 py-3.5 text-lg font-semibold text-slate-100 hover:bg-[#222b43]"
 									on:click={() => goto(`/clientes/${client.id}`)}
 								>
 									Abrir rutina del cliente
