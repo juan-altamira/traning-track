@@ -45,7 +45,7 @@
 <section class="flex flex-col gap-8 text-slate-100">
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div>
-			<p class="text-2xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-slate-100">
+			<p class="text-2xl font-extrabold tracking-wide text-emerald-300">
 				En este panel verás a tus clientes
 			</p>
 		</div>
