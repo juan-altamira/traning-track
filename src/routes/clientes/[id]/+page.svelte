@@ -464,22 +464,23 @@ const otherClients = data.otherClients ?? [];
 	{#if showCopyModal}
 		<div class="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-sm px-4">
 			<div class="w-full max-w-md rounded-2xl border border-emerald-700/40 bg-gradient-to-br from-[#0f111b] via-[#0b1020] to-[#11172a] p-6 shadow-2xl shadow-black/50 text-slate-100 space-y-5">
-				<div class="space-y-2 text-center">
+				<div class="space-y-4 text-center">
 					<h2 class="text-2xl font-extrabold">
 						<span class="bg-gradient-to-r from-emerald-300 via-cyan-300 to-slate-100 bg-clip-text text-transparent">
 							Copiar rutina desde otro cliente
 						</span>
 					</h2>
 					<p class="text-sm text-amber-200 flex items-center justify-center gap-2">
-						Esto reemplaza la rutina actual. ⚠️ El progreso se reiniciará para este cliente. ⚠️
+						⚠️ Esto reemplaza la rutina actual. El progreso se reiniciará para este cliente. ⚠️
 					</p>
 				</div>
 				{#if otherClients.length > 0}
 					<label class="block text-sm font-medium text-slate-200">
 						Seleccioná cliente origen
 						<select
-							class="mt-2 w-full rounded-xl border border-slate-600 bg-[#0f1322] px-4 py-3 text-base text-slate-100 shadow-inner focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+							class="mt-3 w-full rounded-xl border border-slate-600 bg-[#0f1322] px-4 py-3 pr-12 text-base text-slate-100 shadow-inner focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-600 appearance-none"
 							bind:value={selectedSource}
+							style="background-image: linear-gradient(45deg, transparent 50%, #94a3b8 50%), linear-gradient(135deg, #94a3b8 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;"
 						>
 							<option value="">Elegí un cliente</option>
 							{#each otherClients as c}
