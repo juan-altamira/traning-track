@@ -190,12 +190,12 @@ const otherClients = data.otherClients ?? [];
 		</div>
 	</div>
 
-	<div class="flex items-center gap-3">
+		<div class="flex items-center gap-3">
 		<a
 			href="/clientes"
 			class="inline-flex items-center gap-2 rounded-2xl border border-slate-700 bg-gradient-to-r from-[#151827] to-[#0f162b] px-4 py-2.5 text-base text-slate-100 shadow-md shadow-black/30 transition hover:-translate-y-0.5 hover:border-emerald-600 hover:shadow-emerald-900/30"
 		>
-			<span aria-hidden="true">←</span>
+			<span aria-hidden="true" class="text-lg leading-none">↩︎</span>
 			<span>Volver al panel</span>
 		</a>
 	</div>
