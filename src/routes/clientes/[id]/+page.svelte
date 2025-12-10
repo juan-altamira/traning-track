@@ -141,14 +141,14 @@ const otherClients = data.otherClients ?? [];
 		<div class="flex w-full flex-col gap-4">
 			<div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 justify-between">
 				<button
-					class="w-full md:w-1/2 rounded-lg border border-slate-700 bg-[#151827] px-5 py-3 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
+					class="w-full md:w-1/2 rounded-2xl border border-emerald-700/40 bg-gradient-to-r from-emerald-700 to-teal-600 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:brightness-110"
 					type="button"
 					on:click={copyLink}
 				>
 					Copiar link público
 				</button>
 				<button
-					class="w-full md:w-1/2 rounded-lg border border-slate-700 bg-[#151827] px-5 py-3 text-base font-medium text-slate-100 hover:bg-[#1b1f30]"
+					class="w-full md:w-1/2 rounded-2xl border border-cyan-700/40 bg-gradient-to-r from-cyan-700 to-sky-600 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-cyan-900/30 transition hover:brightness-110"
 					type="button"
 					on:click={() => {
 						selectedSource = '';
@@ -161,7 +161,7 @@ const otherClients = data.otherClients ?? [];
 			<div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 justify-between">
 				{#if clientStatus === 'active'}
 					<button
-						class="w-full md:w-1/2 rounded-lg border border-amber-500/50 bg-amber-900/40 px-5 py-3 text-base font-medium text-amber-200 hover:bg-amber-900/60"
+						class="w-full md:w-1/2 rounded-2xl border border-amber-500/60 bg-gradient-to-r from-amber-700 to-orange-600 px-5 py-3 text-base font-semibold text-amber-50 shadow-lg shadow-amber-900/30 transition hover:brightness-110"
 						type="button"
 						on:click={() => (showArchiveConfirm = true)}
 					>
@@ -169,7 +169,7 @@ const otherClients = data.otherClients ?? [];
 					</button>
 				{:else}
 					<button
-						class="w-full md:w-1/2 rounded-lg border border-emerald-500/50 bg-emerald-900/40 px-5 py-3 text-base font-medium text-emerald-200 hover:bg-emerald-900/60"
+						class="w-full md:w-1/2 rounded-2xl border border-emerald-500/60 bg-gradient-to-r from-emerald-700 to-green-600 px-5 py-3 text-base font-semibold text-emerald-50 shadow-lg shadow-emerald-900/30 transition hover:brightness-110"
 						type="button"
 						on:click={() => setStatus('active')}
 					>
@@ -177,7 +177,7 @@ const otherClients = data.otherClients ?? [];
 					</button>
 				{/if}
 				<button
-					class="w-full md:w-1/2 rounded-lg border border-red-700 bg-red-900/50 px-5 py-3 text-base font-medium text-red-100 hover:bg-red-900/70"
+					class="w-full md:w-1/2 rounded-2xl border border-red-700/70 bg-gradient-to-r from-red-800 to-rose-700 px-5 py-3 text-base font-semibold text-red-50 shadow-lg shadow-red-900/30 transition hover:brightness-110"
 					type="button"
 					on:click={() => {
 						showDeleteConfirm = true;
