@@ -363,7 +363,7 @@ const otherClients = data.otherClients ?? [];
 							<li class="flex items-center justify-between rounded-lg border border-slate-800 bg-[#111423] px-4 py-3">
 								<div>
 									<p class="font-semibold">{day.label}</p>
-									<p class="text-sm text-slate-400">
+									<p class="text-sm text-slate-400 mb-1">
 										{completion.done}/{completion.total} ejercicios completos
 									</p>
 								</div>
