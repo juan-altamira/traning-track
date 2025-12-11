@@ -138,7 +138,14 @@ export const actions: Actions = {
 			const end = Date.parse(sessionEnd);
 			if (!Number.isNaN(start) && !Number.isNaN(end) && end > start) {
 				const durationSec = (end - start) / 1000;
-				if (durationSec < 60) {
+				const existingDay = existing[sessionDay];
+				const hadProgressBefore =
+					existingDay?.completed ||
+					Object.values(existingDay?.exercises ?? {}).some((val) => (val ?? 0) > 0);
+				const wasCompletedBefore = existingDay?.completed ?? false;
+
+				// Solo marcar sospechoso si se pasó de 0 progreso a todo completo en menos de 60s
+				if (!hadProgressBefore && !wasCompletedBefore && durationSec < 60) {
 					parsed[sessionDay] = {
 						...(parsed[sessionDay] ?? { completed: true, exercises: {} }),
 						suspicious: true

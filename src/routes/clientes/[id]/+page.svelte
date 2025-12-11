@@ -368,7 +368,7 @@ const otherClients = data.otherClients ?? [];
 									</p>
 								</div>
 								<span
-									class={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+									class={`rounded-full px-3.5 py-1.5 text-sm font-semibold whitespace-nowrap ${
 										progress[day.key]?.suspicious
 											? 'bg-amber-900/50 text-amber-200'
 											: completion.completed
