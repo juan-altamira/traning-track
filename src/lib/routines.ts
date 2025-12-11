@@ -58,7 +58,10 @@ export const normalizeProgress = (
 
 	base._meta = {
 		last_activity_utc: meta?.last_activity_utc ?? progress?._meta?.last_activity_utc ?? null,
-		last_reset_utc: meta?.last_reset_utc ?? progress?._meta?.last_reset_utc ?? null
+		last_reset_utc: meta?.last_reset_utc ?? progress?._meta?.last_reset_utc ?? null,
+		suspicious_day: meta?.suspicious_day ?? progress?._meta?.suspicious_day ?? null,
+		suspicious_at: meta?.suspicious_at ?? progress?._meta?.suspicious_at ?? null,
+		suspicious_reason: meta?.suspicious_reason ?? progress?._meta?.suspicious_reason ?? null
 	};
 
 	return base;

@@ -105,6 +105,9 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const rawProgress = String(formData.get('progress') || '');
+		const sessionDay = String(formData.get('session_day') || '');
+		const sessionStart = String(formData.get('session_start') || '');
+		const sessionEnd = String(formData.get('session_end') || '');
 
 		let parsed: ProgressState;
 		try {
@@ -115,9 +118,30 @@ export const actions: Actions = {
 		}
 
 		const nowUtc = nowIsoUtc();
+
+		let suspiciousDay: string | null = parsed?._meta?.suspicious_day ?? null;
+		let suspiciousReason: string | null = parsed?._meta?.suspicious_reason ?? null;
+		let suspiciousAt: string | null = parsed?._meta?.suspicious_at ?? null;
+
+		if (sessionDay && parsed[sessionDay]?.completed && sessionStart && sessionEnd) {
+			const start = Date.parse(sessionStart);
+			const end = Date.parse(sessionEnd);
+			if (!Number.isNaN(start) && !Number.isNaN(end) && end > start) {
+				const durationSec = (end - start) / 1000;
+				if (durationSec < 60) {
+					suspiciousDay = sessionDay;
+					suspiciousAt = nowUtc;
+					suspiciousReason = `completed_under_60s:${Math.round(durationSec)}s`;
+				}
+			}
+		}
+
 		const progress = normalizeProgress(parsed, {
 			last_activity_utc: nowUtc,
-			last_reset_utc: parsed?._meta?.last_reset_utc ?? null
+			last_reset_utc: parsed?._meta?.last_reset_utc ?? null,
+			suspicious_day: suspiciousDay,
+			suspicious_at: suspiciousAt,
+			suspicious_reason: suspiciousReason
 		});
 		const anyCompleted = WEEK_DAYS.some((day) => progress[day.key]?.completed);
 

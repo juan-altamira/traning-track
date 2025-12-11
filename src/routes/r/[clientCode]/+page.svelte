@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { WEEK_DAYS, getTargetSets } from '$lib/routines';
-	import type { ProgressState, RoutinePlan } from '$lib/types';
+import { WEEK_DAYS, getTargetSets } from '$lib/routines';
+import type { ProgressState, RoutinePlan } from '$lib/types';
 
 	let { data } = $props();
 
@@ -8,10 +8,11 @@
 	let progress: ProgressState = $state(
 		data.status === 'ok' ? structuredClone(data.progress) : ({} as ProgressState)
 	);
-	let expanded = $state<Record<string, boolean>>({});
-	let saving = $state(false);
-	let message = $state('');
-	let showResetConfirm = $state(false);
+let expanded = $state<Record<string, boolean>>({});
+let saving = $state(false);
+let message = $state('');
+let showResetConfirm = $state(false);
+let sessionStarts = $state<Record<string, string>>({});
 
 	const adjustSets = (dayKey: string, exerciseId: string, delta: number) => {
 		const dayPlan = plan[dayKey];
@@ -21,6 +22,10 @@
 		const target = Math.max(1, getTargetSets(exercise) || 0);
 		const current = progress[dayKey]?.exercises?.[exerciseId] ?? 0;
 		const nextValue = Math.min(Math.max(current + delta, 0), target);
+
+		if (!sessionStarts[dayKey]) {
+			sessionStarts = { ...sessionStarts, [dayKey]: new Date().toISOString() };
+		}
 
 		progress[dayKey] = {
 			...(progress[dayKey] ?? { completed: false, exercises: {} }),
@@ -32,18 +37,23 @@
 			const done = progress[dayKey].exercises?.[ex.id] ?? 0;
 			return done >= t;
 		});
-		saveProgress();
+		saveProgress(dayKey);
 	};
 
 	const toggleExpanded = (dayKey: string) => {
 		expanded = { ...expanded, [dayKey]: !expanded[dayKey] };
 	};
 
-	const saveProgress = async () => {
+	const saveProgress = async (dayKey?: string) => {
 		saving = true;
 		message = '';
 		const formData = new FormData();
 		formData.set('progress', JSON.stringify(progress));
+		if (dayKey) {
+			formData.set('session_day', dayKey);
+			formData.set('session_start', sessionStarts[dayKey] ?? '');
+			formData.set('session_end', new Date().toISOString());
+		}
 		const res = await fetch('?/saveProgress', {
 			method: 'POST',
 			body: formData

@@ -24,6 +24,9 @@ export type ProgressDay = {
 export type ProgressMeta = {
 	last_reset_utc?: string | null;
 	last_activity_utc?: string | null;
+	suspicious_day?: string | null;
+	suspicious_at?: string | null;
+	suspicious_reason?: string | null;
 };
 
 export type ProgressState = Record<string, ProgressDay> & {

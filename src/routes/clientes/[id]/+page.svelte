@@ -369,10 +369,18 @@ const otherClients = data.otherClients ?? [];
 								</div>
 								<span
 									class={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-										completion.completed ? 'bg-emerald-900/50 text-emerald-300' : 'bg-slate-800 text-slate-300'
+										progress._meta?.suspicious_day === day.key
+											? 'bg-amber-900/50 text-amber-200'
+											: completion.completed
+												? 'bg-emerald-900/50 text-emerald-300'
+												: 'bg-slate-800 text-slate-300'
 									}`}
 								>
-									{completion.completed ? 'Completado' : 'En progreso'}
+									{progress._meta?.suspicious_day === day.key
+										? 'Posible engaño'
+										: completion.completed
+											? 'Completado'
+											: 'En progreso'}
 								</span>
 							</li>
 						{/if}
