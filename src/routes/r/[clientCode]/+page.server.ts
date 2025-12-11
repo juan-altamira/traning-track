@@ -117,6 +117,20 @@ export const actions: Actions = {
 			return fail(400, { message: 'Formato inválido' });
 		}
 
+		// Traer progreso existente para conservar flags sospechosos previos
+		const { data: existingRow, error: existingError } = await supabaseAdmin
+			.from('progress')
+			.select('progress')
+			.eq('client_id', client.id)
+			.maybeSingle();
+
+		if (existingError) {
+			console.error(existingError);
+			return fail(500, { message: 'No pudimos guardar el progreso' });
+		}
+
+		const existing = normalizeProgress(existingRow?.progress as ProgressState | null);
+
 		const nowUtc = nowIsoUtc();
 
 		if (sessionDay && parsed[sessionDay]?.completed && sessionStart && sessionEnd) {
@@ -138,6 +152,13 @@ export const actions: Actions = {
 			last_reset_utc: parsed?._meta?.last_reset_utc ?? null
 		});
 		const anyCompleted = WEEK_DAYS.some((day) => progress[day.key]?.completed);
+
+		// Conservar flags sospechosos previos y no permitir que se borren al guardar otro día
+		for (const day of WEEK_DAYS) {
+			if (existing[day.key]?.suspicious) {
+				progress[day.key].suspicious = true;
+			}
+		}
 
 		const { error: updateError } = await supabaseAdmin
 			.from('progress')

@@ -388,7 +388,7 @@ const otherClients = data.otherClients ?? [];
 				</ul>
 				{#if WEEK_DAYS.some((d) => progress[d.key]?.suspicious)}
 					<p class="mt-3 text-sm text-amber-200">
-						Es posible que el cliente haya marcado todas las series en menos de 60 segundos.
+						El cliente marcó todas las series del día en menos de 60 segundos. Es posible que las haya marcado sin haber entrenado.
 					</p>
 				{/if}
 				{#if data.last_completed_at}
