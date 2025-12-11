@@ -51,7 +51,8 @@ export const normalizeProgress = (
 		acc[day.key] = {
 			completed: state?.completed ?? false,
 			exercises: state?.exercises ?? {},
-			lastUpdated: state?.lastUpdated
+			lastUpdated: state?.lastUpdated,
+			suspicious: state?.suspicious ?? false
 		};
 		return acc;
 	}, {} as ProgressState);

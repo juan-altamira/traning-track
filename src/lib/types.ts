@@ -19,6 +19,7 @@ export type ProgressDay = {
 	completed: boolean;
 	exercises: Record<string, number>;
 	lastUpdated?: string;
+	suspicious?: boolean;
 };
 
 export type ProgressMeta = {

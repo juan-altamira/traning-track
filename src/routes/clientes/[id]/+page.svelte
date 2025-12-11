@@ -369,14 +369,14 @@ const otherClients = data.otherClients ?? [];
 								</div>
 								<span
 									class={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-										progress._meta?.suspicious_day === day.key
+										progress[day.key]?.suspicious
 											? 'bg-amber-900/50 text-amber-200'
 											: completion.completed
 												? 'bg-emerald-900/50 text-emerald-300'
 												: 'bg-slate-800 text-slate-300'
 									}`}
 								>
-									{progress._meta?.suspicious_day === day.key
+									{progress[day.key]?.suspicious
 										? 'Posible engaño'
 										: completion.completed
 											? 'Completado'
@@ -386,6 +386,11 @@ const otherClients = data.otherClients ?? [];
 						{/if}
 					{/each}
 				</ul>
+				{#if WEEK_DAYS.some((d) => progress[d.key]?.suspicious)}
+					<p class="mt-3 text-sm text-amber-200">
+						Es posible que el cliente haya marcado todas las series en menos de 60 segundos.
+					</p>
+				{/if}
 				{#if data.last_completed_at}
 					<p class="mt-3 text-sm text-slate-500">
 						Última actualización: {new Date(data.last_completed_at).toLocaleString()}
