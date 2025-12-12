@@ -14,7 +14,7 @@ let clientStatus = $state(data.client.status as 'active' | 'archived');
 let showDeleteConfirm = $state(false);
 let deleteConfirmText = $state('');
 let showArchiveConfirm = $state(false);
-let linkFeedback = $state('');
+let copiedLink = $state(false);
 let showCopyModal = $state(false);
 let selectedSource = $state('');
 const MAX_EXERCISES_PER_DAY = 50;
@@ -64,8 +64,8 @@ const hasSuspicious = WEEK_DAYS.some((d) => progress[d.key]?.suspicious);
 
 	const copyLink = async () => {
 		await navigator.clipboard.writeText(link);
-		linkFeedback = 'Link copiado';
-		setTimeout(() => (linkFeedback = ''), 2000);
+		copiedLink = true;
+		setTimeout(() => (copiedLink = false), 2000);
 	};
 
 	const copyRoutine = async () => {
@@ -146,7 +146,7 @@ const hasSuspicious = WEEK_DAYS.some((d) => progress[d.key]?.suspicious);
 					type="button"
 					on:click={copyLink}
 				>
-					Copiar link de la rutina
+					{copiedLink ? 'Copiado' : 'Copiar link de la rutina'}
 				</button>
 				<button
 					class="w-full md:w-1/2 rounded-2xl border border-cyan-700/40 bg-gradient-to-r from-cyan-700 to-sky-600 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-cyan-900/30 transition hover:-translate-y-0.5 hover:shadow-cyan-900/50 hover:brightness-110"
@@ -203,12 +203,6 @@ const hasSuspicious = WEEK_DAYS.some((d) => progress[d.key]?.suspicious);
 
 	{#if statusMessage}
 		<p class="rounded-lg bg-[#151827] px-3 py-2 text-sm text-emerald-200 border border-emerald-700/40">{statusMessage}</p>
-	{/if}
-
-	{#if linkFeedback}
-		<div class="fixed top-6 right-6 z-40 rounded-lg border border-emerald-700/40 bg-emerald-900/70 px-4 py-3 text-sm font-semibold text-emerald-100 shadow-lg shadow-black/40">
-			{linkFeedback}
-		</div>
 	{/if}
 
 	<section class="grid gap-6 lg:grid-cols-[2fr,1fr]">
